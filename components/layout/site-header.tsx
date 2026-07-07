@@ -1,3 +1,45 @@
-export function SiteHeader() {
-  return null;
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { MobileNav } from "@/components/layout/mobile-nav";
+import { cn } from "@/lib/utils";
+
+const navItems = [
+  { href: "/#how-it-works", label: "How it works" },
+  { href: "/artists", label: "Explore artists" },
+  { href: "/#ai-assistant", label: "AI Assistant" },
+] as const;
+
+export function SiteHeader({ className }: Readonly<{ className?: string }>) {
+  return (
+    <header
+      className={cn(
+        "border-border/70 bg-background/90 sticky top-0 z-40 border-b backdrop-blur-xl",
+        className,
+      )}
+    >
+      <div className="page-container flex h-20 items-center justify-between gap-6">
+        <Link
+          className="text-primary text-base font-bold tracking-tight"
+          href="/"
+        >
+          BeautiBridge
+        </Link>
+        <nav className="text-foreground/75 hidden items-center gap-10 text-sm font-medium md:flex">
+          {navItems.map((item) => (
+            <Link
+              className="hover:text-primary transition-colors"
+              href={item.href}
+              key={item.href}
+            >
+              {item.label}
+            </Link>
+          ))}
+        </nav>
+        <div className="hidden md:block">
+          <Button variant="primary">Find Artists</Button>
+        </div>
+        <MobileNav items={navItems} />
+      </div>
+    </header>
+  );
 }

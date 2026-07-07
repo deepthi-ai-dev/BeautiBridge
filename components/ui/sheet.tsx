@@ -3,11 +3,11 @@
 import type { HTMLAttributes } from "react";
 import { cn } from "@/lib/utils";
 
-export function Toast({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
+export function Sheet({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
   return (
     <div
       className={cn(
-        "border-border bg-card text-card-foreground shadow-premium rounded-lg border px-4 py-3 text-sm",
+        "bg-plum-950/35 fixed inset-0 z-50 backdrop-blur-sm",
         className,
       )}
       {...props}
@@ -15,14 +15,14 @@ export function Toast({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
   );
 }
 
-export function ToastViewport({
+export function SheetContent({
   className,
   ...props
 }: HTMLAttributes<HTMLDivElement>) {
   return (
-    <div
+    <aside
       className={cn(
-        "fixed right-4 bottom-4 z-50 flex w-80 max-w-[calc(100vw-2rem)] flex-col gap-3",
+        "border-border bg-card text-card-foreground shadow-premium ml-auto flex h-full w-full max-w-sm flex-col border-l p-6",
         className,
       )}
       {...props}

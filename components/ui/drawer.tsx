@@ -1,7 +1,6 @@
 "use client";
 
-import type { HTMLAttributes } from "react";
-
-export function Drawer(props: HTMLAttributes<HTMLDivElement>) {
-  return <div {...props} />;
-}
+export {
+  Sheet as Drawer,
+  SheetContent as DrawerContent,
+} from "@/components/ui/sheet";

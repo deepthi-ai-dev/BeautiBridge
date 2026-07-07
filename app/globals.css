@@ -1,11 +1,12 @@
 @import "tailwindcss";
 
 :root {
+  color-scheme: light;
   --background: #efe6d8;
   --foreground: #351b31;
-  --card: #f8f1e8;
+  --card: #fff8ef;
   --card-foreground: #351b31;
-  --popover: #f8f1e8;
+  --popover: #fff8ef;
   --popover-foreground: #351b31;
   --primary: #542843;
   --primary-foreground: #fff8ef;
@@ -20,7 +21,32 @@
   --border: #ded1c2;
   --input: #ded1c2;
   --ring: #e69791;
+  --plum-950: #2b1729;
+  --plum-900: #351b31;
+  --plum-800: #45213b;
+  --plum-700: #542843;
+  --plum-600: #6a3657;
+  --beige-50: #fffaf3;
+  --beige-100: #f8f1e8;
+  --beige-200: #efe6d8;
+  --beige-300: #e3d5c4;
+  --salmon-300: #f0b3ad;
+  --salmon-400: #e69791;
+  --salmon-500: #d9827d;
+  --gold-400: #dcae5b;
+  --teal-400: #20c6d4;
+  --radius-xs: 0.375rem;
+  --radius-sm: 0.5rem;
   --radius: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.5rem;
+  --radius-pill: 999px;
+  --shadow-soft: 0 18px 60px rgb(84 40 67 / 0.1);
+  --shadow-card: 0 20px 48px rgb(53 27 49 / 0.12);
+  --shadow-premium: 0 28px 90px rgb(53 27 49 / 0.18);
+  --space-section: clamp(4.5rem, 8vw, 8rem);
+  --container-page: 75rem;
+  --ease-soft: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 @theme inline {
@@ -43,12 +69,122 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
-  --font-sans: "Manrope", "Avenir Next", "Segoe UI", sans-serif;
+  --color-plum-950: var(--plum-950);
+  --color-plum-900: var(--plum-900);
+  --color-plum-800: var(--plum-800);
+  --color-plum-700: var(--plum-700);
+  --color-plum-600: var(--plum-600);
+  --color-beige-50: var(--beige-50);
+  --color-beige-100: var(--beige-100);
+  --color-beige-200: var(--beige-200);
+  --color-beige-300: var(--beige-300);
+  --color-salmon-300: var(--salmon-300);
+  --color-salmon-400: var(--salmon-400);
+  --color-salmon-500: var(--salmon-500);
+  --color-gold-400: var(--gold-400);
+  --color-teal-400: var(--teal-400);
+  --radius-xs: var(--radius-xs);
+  --radius-sm: var(--radius-sm);
+  --radius-md: var(--radius);
+  --radius-lg: var(--radius-lg);
+  --radius-xl: var(--radius-xl);
+  --shadow-soft: var(--shadow-soft);
+  --shadow-card: var(--shadow-card);
+  --shadow-premium: var(--shadow-premium);
+  --breakpoint-xs: 30rem;
+  --font-sans:
+    "Manrope", "Avenir Next", "Segoe UI", "Helvetica Neue", sans-serif;
   --font-mono: "SFMono-Regular", "Cascadia Code", Consolas, monospace;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --background: #241d22;
+    --foreground: #fff8ef;
+    --card: #30262c;
+    --card-foreground: #fff8ef;
+    --popover: #30262c;
+    --popover-foreground: #fff8ef;
+    --primary: #f0b3ad;
+    --primary-foreground: #2b1729;
+    --secondary: #dcae5b;
+    --secondary-foreground: #2b1729;
+    --muted: #40333b;
+    --muted-foreground: #cbb9ac;
+    --accent: #20c6d4;
+    --accent-foreground: #2b1729;
+    --border: #57464f;
+    --input: #57464f;
+    --ring: #f0b3ad;
+  }
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans);
+}
+
+::selection {
+  background: var(--salmon-300);
+  color: var(--plum-950);
+}
+
+@utility page-container {
+  margin-inline: auto;
+  width: min(100% - 2rem, var(--container-page));
+}
+
+@utility section-y {
+  padding-block: var(--space-section);
+}
+
+@utility warm-surface {
+  background:
+    radial-gradient(
+      circle at top left,
+      rgb(240 179 173 / 0.2),
+      transparent 28rem
+    ),
+    linear-gradient(180deg, var(--beige-100), var(--beige-200));
+}
+
+@utility plum-panel {
+  background:
+    linear-gradient(135deg, rgb(84 40 67 / 0.96), rgb(53 27 49 / 0.98)),
+    var(--plum-900);
+  color: var(--beige-50);
+}
+
+@utility text-balance {
+  text-wrap: balance;
+}
+
+@utility premium-card {
+  border: 1px solid color-mix(in srgb, var(--border) 82%, transparent);
+  border-radius: var(--radius-lg);
+  background: color-mix(in srgb, var(--card) 94%, white);
+  box-shadow: var(--shadow-card);
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
 }
