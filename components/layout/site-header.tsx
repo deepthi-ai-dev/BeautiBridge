@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { MobileNav } from "@/components/layout/mobile-nav";
+import { UserNav } from "@/components/layout/user-nav";
 import { cn } from "@/lib/utils";
+import { auth } from "@/auth";
 
 const navItems = [
   { href: "/#how-it-works", label: "How it works" },
@@ -9,7 +11,10 @@ const navItems = [
   { href: "/#ai-assistant", label: "AI Assistant" },
 ] as const;
 
-export function SiteHeader({ className }: Readonly<{ className?: string }>) {
+export async function SiteHeader({ className }: Readonly<{ className?: string }>) {
+  const session = await auth();
+  const isLoggedIn = Boolean(session?.user);
+
   return (
     <header
       className={cn(
@@ -36,23 +41,29 @@ export function SiteHeader({ className }: Readonly<{ className?: string }>) {
           ))}
         </nav>
         <div className="hidden items-center gap-3 md:flex">
-          <Link
-            className="text-primary hover:bg-muted rounded-full px-4 py-2 text-sm font-semibold transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
-            href="/login"
-          >
-            Login
-          </Link>
-          <Link
-            className="text-primary hover:bg-muted rounded-full px-4 py-2 text-sm font-semibold transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
-            href="/register"
-          >
-            Sign Up
-          </Link>
+          {!isLoggedIn ? (
+            <>
+              <Link
+                className="text-primary hover:bg-muted rounded-full px-4 py-2 text-sm font-semibold transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                href="/login"
+              >
+                Login
+              </Link>
+              <Link
+                className="text-primary hover:bg-muted rounded-full px-4 py-2 text-sm font-semibold transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                href="/register"
+              >
+                Sign Up
+              </Link>
+            </>
+          ) : (
+            <UserNav user={session!.user!} />
+          )}
           <Link href="/artists">
             <Button variant="primary">Find Artists</Button>
           </Link>
         </div>
-        <MobileNav items={navItems} />
+        <MobileNav items={navItems} isLoggedIn={isLoggedIn} user={session?.user} />
       </div>
     </header>
   );

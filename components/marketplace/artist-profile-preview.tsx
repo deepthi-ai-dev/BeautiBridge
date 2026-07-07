@@ -191,9 +191,11 @@ export function ArtistProfilePreview({
                       Full Profile
                     </Button>
                   </Link>
-                  <Button className="w-full" disabled size="sm" variant="primary">
-                    Book (Soon)
-                  </Button>
+                  <Link href={`/artists/${artist.slug}/book`}>
+                    <Button className="w-full" size="sm" variant="primary">
+                      Book Session
+                    </Button>
+                  </Link>
                 </div>
               </div>
             </div>

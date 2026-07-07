@@ -15,4 +15,4 @@ export const protectedRoutePrefixes = [
   "/bookings",
 ] as const;
 
-export const defaultAuthenticatedRedirect = "/bookings";
+export const defaultAuthenticatedRedirect = "/artists";
