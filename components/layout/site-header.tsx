@@ -8,7 +8,7 @@ import { auth } from "@/auth";
 const navItems = [
   { href: "/#how-it-works", label: "How it works" },
   { href: "/artists", label: "Explore artists" },
-  { href: "/#ai-assistant", label: "AI Assistant" },
+  { href: "/assistant", label: "AI Assistant" },
 ] as const;
 
 export async function SiteHeader({ className }: Readonly<{ className?: string }>) {

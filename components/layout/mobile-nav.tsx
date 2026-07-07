@@ -97,7 +97,7 @@ export function MobileNav({
                 </Link>
                 <Link
                   className="hover:bg-muted flex items-center gap-3 rounded-lg px-3 py-3"
-                  href="/#ai-assistant"
+                  href="/assistant"
                   onClick={() => setIsOpen(false)}
                 >
                   <Bot className="size-4" /> AI Assistant

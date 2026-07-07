@@ -188,3 +188,24 @@ body {
     transform: translateX(100%);
   }
 }
+
+@keyframes typing-dot {
+  0%, 60%, 100% {
+    transform: translateY(0);
+    opacity: 0.4;
+  }
+  30% {
+    transform: translateY(-4px);
+    opacity: 1;
+  }
+}
+
+/* Prose overrides for chat markdown */
+.prose pre {
+  overflow-x: auto;
+}
+
+.prose code::before,
+.prose code::after {
+  content: none;
+}
