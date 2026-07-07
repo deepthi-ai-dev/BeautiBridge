@@ -35,8 +35,22 @@ export function SiteHeader({ className }: Readonly<{ className?: string }>) {
             </Link>
           ))}
         </nav>
-        <div className="hidden md:block">
-          <Button variant="primary">Find Artists</Button>
+        <div className="hidden items-center gap-3 md:flex">
+          <Link
+            className="text-primary hover:bg-muted rounded-full px-4 py-2 text-sm font-semibold transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+            href="/login"
+          >
+            Login
+          </Link>
+          <Link
+            className="text-primary hover:bg-muted rounded-full px-4 py-2 text-sm font-semibold transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+            href="/register"
+          >
+            Sign Up
+          </Link>
+          <Link href="/artists">
+            <Button variant="primary">Find Artists</Button>
+          </Link>
         </div>
         <MobileNav items={navItems} />
       </div>

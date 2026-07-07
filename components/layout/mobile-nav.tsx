@@ -49,6 +49,22 @@ export function MobileNav({
             >
               Find Artists
             </Link>
+            <div className="grid grid-cols-2 gap-2 pt-2">
+              <Link
+                className="border-border hover:bg-muted rounded-full border px-4 py-2 text-center"
+                href="/login"
+                onClick={() => setIsOpen(false)}
+              >
+                Login
+              </Link>
+              <Link
+                className="border-border hover:bg-muted rounded-full border px-4 py-2 text-center"
+                href="/register"
+                onClick={() => setIsOpen(false)}
+              >
+                Sign Up
+              </Link>
+            </div>
           </nav>
         </div>
       ) : null}

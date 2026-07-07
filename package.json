@@ -10,6 +10,8 @@
     "typecheck": "tsc --noEmit",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
+    "db:init": "prisma db push",
+    "prisma:push": "prisma db push",
     "prisma:generate": "prisma generate",
     "prisma:validate": "prisma validate"
   },
