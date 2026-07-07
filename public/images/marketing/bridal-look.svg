@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="980" viewBox="0 0 760 980" role="img" aria-label="Bridal makeup look">
+  <rect width="760" height="980" rx="48" fill="#efe6d8"/>
+  <circle cx="382" cy="314" r="210" fill="#211621"/>
+  <circle cx="384" cy="398" r="150" fill="#c78474"/>
+  <path d="M245 335c30-174 257-198 309-39-74-18-130 3-166 63-50-18-96-26-143-24Z" fill="#20151f"/>
+  <path d="M210 840c36-218 112-340 228-365 103 31 173 152 210 365H210Z" fill="#5b2b48"/>
+  <circle cx="310" cy="380" r="11" fill="#351b31"/>
+  <circle cx="456" cy="380" r="11" fill="#351b31"/>
+  <path d="M322 464c38 28 86 28 124 0" stroke="#652b4a" stroke-width="12" stroke-linecap="round"/>
+  <circle cx="384" cy="264" r="42" fill="#dcae5b"/>
+  <circle cx="250" cy="310" r="24" fill="#dcae5b"/>
+  <circle cx="518" cy="310" r="24" fill="#dcae5b"/>
+</svg>

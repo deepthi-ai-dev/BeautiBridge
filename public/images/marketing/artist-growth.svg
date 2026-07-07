@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="980" viewBox="0 0 900 980" role="img" aria-label="Independent beauty artist portrait">
+  <defs>
+    <linearGradient id="hair" x1="0" x2="1" y1="0" y2="1">
+      <stop stop-color="#1f1620"/>
+      <stop offset="1" stop-color="#4a2a35"/>
+    </linearGradient>
+  </defs>
+  <rect width="900" height="980" rx="56" fill="#d8c9b9"/>
+  <circle cx="452" cy="326" r="236" fill="url(#hair)"/>
+  <circle cx="452" cy="392" r="154" fill="#c98976"/>
+  <path d="M292 364c42-194 276-246 369-55-66-37-128-27-184 30-49 49-105 58-185 25Z" fill="#1b151c"/>
+  <path d="M286 822c34-204 105-319 214-346 124 20 203 135 236 346H286Z" fill="#2b1729"/>
+  <path d="M386 446c47 30 104 31 155 0" stroke="#6a3657" stroke-width="12" stroke-linecap="round"/>
+  <circle cx="402" cy="390" r="10" fill="#351b31"/>
+  <circle cx="513" cy="390" r="10" fill="#351b31"/>
+  <rect x="536" y="146" width="244" height="104" rx="28" fill="#fff8ef" opacity=".95"/>
+  <text x="590" y="190" font-family="Arial, sans-serif" font-size="32" font-weight="700" fill="#542843">+3x</text>
+  <text x="590" y="222" font-family="Arial, sans-serif" font-size="20" fill="#7a625f">avg. bookings growth</text>
+</svg>

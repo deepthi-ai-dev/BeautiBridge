@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="620" viewBox="0 0 760 620" role="img" aria-label="Nail artist work">
+  <rect width="760" height="620" rx="44" fill="#f8f1e8"/>
+  <path d="M144 359c79-94 155-134 228-120 62 13 125 51 190 116" stroke="#d99886" stroke-width="72" stroke-linecap="round"/>
+  <path d="M226 326l55 114M330 292l37 129M433 303l24 119M530 357l5 89" stroke="#fff8ef" stroke-width="18" stroke-linecap="round"/>
+  <rect x="74" y="398" width="262" height="114" rx="26" fill="#e69791" opacity=".45"/>
+  <rect x="390" y="112" width="230" height="150" rx="30" fill="#dcae5b" opacity=".35"/>
+  <circle cx="606" cy="412" r="70" fill="#542843" opacity=".12"/>
+</svg>

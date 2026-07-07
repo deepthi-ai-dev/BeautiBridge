@@ -1,17 +1,31 @@
+import { SiteFooter } from "@/components/layout/site-footer";
+import { SiteHeader } from "@/components/layout/site-header";
+import { AiAdvantageSection } from "@/components/marketing/ai-advantage-section";
+import { ArtistBenefits } from "@/components/marketing/artist-benefits";
+import { CustomerBenefits } from "@/components/marketing/customer-benefits";
+import { FinalCta } from "@/components/marketing/final-cta";
+import { HeroSection } from "@/components/marketing/hero-section";
+import { HowItWorks } from "@/components/marketing/how-it-works";
+import { ProblemSection } from "@/components/marketing/problem-section";
+import { TestimonialsSection } from "@/components/marketing/testimonials-section";
+import { TrustedArtistsSection } from "@/components/marketing/trusted-artists-section";
+
 export default function HomePage() {
   return (
-    <main className="flex min-h-screen items-center justify-center px-6 text-center">
-      <div className="max-w-2xl">
-        <p className="text-secondary text-sm font-semibold tracking-[0.32em] uppercase">
-          BeautiBridge
-        </p>
-        <h1 className="text-primary mt-4 text-4xl font-semibold tracking-tight">
-          Phase 0 foundation is ready.
-        </h1>
-        <p className="text-muted-foreground mt-4">
-          Application features begin after the repository setup phase.
-        </p>
-      </div>
-    </main>
+    <>
+      <SiteHeader />
+      <main>
+        <HeroSection />
+        <ProblemSection />
+        <CustomerBenefits />
+        <AiAdvantageSection />
+        <ArtistBenefits />
+        <HowItWorks />
+        <TrustedArtistsSection />
+        <TestimonialsSection />
+        <FinalCta />
+      </main>
+      <SiteFooter />
+    </>
   );
 }

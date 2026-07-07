@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="980" viewBox="0 0 760 980" role="img" aria-label="Elegant bridal hairstyle">
+  <rect width="760" height="980" rx="48" fill="#e7dccd"/>
+  <circle cx="382" cy="352" r="210" fill="#a6745a"/>
+  <path d="M210 848c30-214 99-332 207-354 102 28 174 146 218 354H210Z" fill="#fff8ef"/>
+  <path d="M265 298c28-98 218-114 253 0-42 104-211 109-253 0Z" fill="#7d513e"/>
+  <circle cx="381" cy="352" r="112" fill="#c99779"/>
+  <path d="M248 292c52 58 105 86 160 86 41 0 83-17 126-50" stroke="#6f4637" stroke-width="34" stroke-linecap="round"/>
+  <circle cx="386" cy="397" r="70" fill="#815340"/>
+  <circle cx="316" cy="368" r="12" fill="#fff8ef"/>
+  <circle cx="452" cy="370" r="12" fill="#fff8ef"/>
+</svg>

@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="720" viewBox="0 0 1600 720" role="img" aria-label="Beauty detail background">
+  <rect width="1600" height="720" fill="#351b31"/>
+  <circle cx="410" cy="366" r="230" fill="#e69791" opacity=".16"/>
+  <circle cx="1110" cy="342" r="270" fill="#dcae5b" opacity=".08"/>
+  <path d="M239 372c132-102 265-101 397 0-132 104-265 104-397 0Z" fill="#fff8ef" opacity=".08"/>
+  <path d="M941 362c132-104 265-104 397 0-132 102-265 102-397 0Z" fill="#fff8ef" opacity=".08"/>
+  <circle cx="438" cy="372" r="54" fill="#fff8ef" opacity=".08"/>
+  <circle cx="1140" cy="362" r="54" fill="#fff8ef" opacity=".08"/>
+</svg>

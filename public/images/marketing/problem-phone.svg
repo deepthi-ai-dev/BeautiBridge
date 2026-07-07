@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="900" viewBox="0 0 900 900" role="img" aria-label="Customer searching for beauty artist on phone">
+  <defs>
+    <linearGradient id="seat" x1="0" x2="1">
+      <stop stop-color="#b97555"/>
+      <stop offset="1" stop-color="#7b4a3d"/>
+    </linearGradient>
+  </defs>
+  <rect width="900" height="900" rx="64" fill="#efe6d8"/>
+  <rect x="96" y="144" width="708" height="294" rx="68" fill="url(#seat)"/>
+  <circle cx="430" cy="358" r="132" fill="#d99f84"/>
+  <path d="M300 328c15-120 215-152 286-50-40-7-81 3-121 30-44 30-93 38-165 20Z" fill="#9a5636"/>
+  <path d="M264 741c41-181 125-275 252-281 137 30 224 126 258 281H264Z" fill="#fff8ef"/>
+  <rect x="550" y="462" width="122" height="210" rx="24" fill="#351b31" transform="rotate(-14 550 462)"/>
+  <rect x="574" y="490" width="74" height="128" rx="12" fill="#f8f1e8" transform="rotate(-14 574 490)"/>
+  <rect x="392" y="737" width="304" height="96" rx="24" fill="#fff8ef" opacity=".95"/>
+  <text x="430" y="785" font-family="Arial, sans-serif" font-size="28" fill="#542843">Booked blind.</text>
+  <text x="430" y="820" font-family="Arial, sans-serif" font-size="24" fill="#7a625f">Never again.</text>
+</svg>
