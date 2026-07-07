@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import type { Route } from "next";
-import { User, Calendar, Bot, Settings, LogOut } from "lucide-react";
+import { User, Calendar, Bot, Settings, LogOut, LayoutDashboard } from "lucide-react";
 import { signOut } from "next-auth/react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
@@ -12,6 +12,7 @@ type UserNavProps = {
     name?: string | null;
     email?: string | null;
     image?: string | null;
+    role?: string | null;
   };
 };
 
@@ -21,6 +22,7 @@ export function UserNav({ user }: UserNavProps) {
   
   const firstName = user.name?.split(" ")[0] || "User";
   const initials = user.name?.slice(0, 2).toUpperCase() || "U";
+  const isArtist = user.role === "ARTIST";
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -36,7 +38,7 @@ export function UserNav({ user }: UserNavProps) {
     <div className="relative" ref={dropdownRef}>
       <button 
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-3 rounded-full border border-border bg-card p-1 pr-4 shadow-sm hover:bg-muted transition-colors"
+        className="flex items-center gap-3 rounded-full border border-border bg-card p-1 pr-4 shadow-sm hover:bg-muted transition-colors cursor-pointer"
       >
         <Avatar className="size-8">
           {user.image ? (
@@ -60,7 +62,15 @@ export function UserNav({ user }: UserNavProps) {
           
           <nav className="flex flex-col gap-1 text-sm font-medium">
             <Link 
-              href={"/profile" as Route} 
+              href={(isArtist ? "/artist-dashboard" : "/dashboard") as Route} 
+              className="flex items-center gap-2 rounded-md px-3 py-2 hover:bg-muted"
+              onClick={() => setIsOpen(false)}
+            >
+              <LayoutDashboard className="size-4" />
+              Dashboard
+            </Link>
+            <Link 
+              href={(isArtist ? "/artist-dashboard/profile" : "/dashboard/profile") as Route} 
               className="flex items-center gap-2 rounded-md px-3 py-2 hover:bg-muted"
               onClick={() => setIsOpen(false)}
             >
@@ -68,15 +78,15 @@ export function UserNav({ user }: UserNavProps) {
               My Profile
             </Link>
             <Link 
-              href="/bookings" 
+              href={(isArtist ? "/artist-dashboard/requests" : "/dashboard/bookings") as Route} 
               className="flex items-center gap-2 rounded-md px-3 py-2 hover:bg-muted"
               onClick={() => setIsOpen(false)}
             >
               <Calendar className="size-4" />
-              My Bookings
+              {isArtist ? "Booking Requests" : "My Bookings"}
             </Link>
             <Link 
-              href="/#ai-assistant" 
+              href="/assistant" 
               className="flex items-center gap-2 rounded-md px-3 py-2 hover:bg-muted"
               onClick={() => setIsOpen(false)}
             >
@@ -84,7 +94,7 @@ export function UserNav({ user }: UserNavProps) {
               AI Assistant
             </Link>
             <Link 
-              href={"/settings" as Route} 
+              href={(isArtist ? "/artist-dashboard/settings" : "/dashboard/settings") as Route} 
               className="flex items-center gap-2 rounded-md px-3 py-2 hover:bg-muted"
               onClick={() => setIsOpen(false)}
             >
@@ -95,7 +105,7 @@ export function UserNav({ user }: UserNavProps) {
             <div className="h-px bg-border my-1" />
             
             <button 
-              className="flex items-center gap-2 rounded-md px-3 py-2 hover:bg-muted text-destructive w-full text-left"
+              className="flex items-center gap-2 rounded-md px-3 py-2 hover:bg-muted text-destructive w-full text-left cursor-pointer"
               onClick={() => {
                 setIsOpen(false);
                 signOut({ callbackUrl: '/' });

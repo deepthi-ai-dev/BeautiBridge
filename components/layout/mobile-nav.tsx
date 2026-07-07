@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import type { Route } from "next";
-import { Menu, X, User, Calendar, Bot, Settings, LogOut } from "lucide-react";
+import { Menu, X, User, Settings, LogOut } from "lucide-react";
 import { useState } from "react";
 import { signOut } from "next-auth/react";
 import { Button } from "@/components/ui/button";
@@ -20,6 +20,7 @@ type MobileNavProps = {
     name?: string | null;
     email?: string | null;
     image?: string | null;
+    role?: string | null;
   };
 };
 
@@ -83,28 +84,14 @@ export function MobileNav({
                 <div className="h-px bg-border my-1" />
                 <Link
                   className="hover:bg-muted flex items-center gap-3 rounded-lg px-3 py-3"
-                  href={"/profile" as Route}
+                  href={(user?.role === "ARTIST" ? "/artist-dashboard/profile" : "/dashboard/profile") as Route}
                   onClick={() => setIsOpen(false)}
                 >
                   <User className="size-4" /> My Profile
                 </Link>
                 <Link
                   className="hover:bg-muted flex items-center gap-3 rounded-lg px-3 py-3"
-                  href="/bookings"
-                  onClick={() => setIsOpen(false)}
-                >
-                  <Calendar className="size-4" /> My Bookings
-                </Link>
-                <Link
-                  className="hover:bg-muted flex items-center gap-3 rounded-lg px-3 py-3"
-                  href="/assistant"
-                  onClick={() => setIsOpen(false)}
-                >
-                  <Bot className="size-4" /> AI Assistant
-                </Link>
-                <Link
-                  className="hover:bg-muted flex items-center gap-3 rounded-lg px-3 py-3"
-                  href={"/settings" as Route}
+                  href={(user?.role === "ARTIST" ? "/artist-dashboard/settings" : "/dashboard/settings") as Route}
                   onClick={() => setIsOpen(false)}
                 >
                   <Settings className="size-4" /> Settings
@@ -114,31 +101,32 @@ export function MobileNav({
 
             <div className="h-px bg-border my-1" />
             
-            <Link
-              className="bg-primary text-primary-foreground rounded-full px-4 py-3 text-center mt-2"
-              href="/artists"
-              onClick={() => setIsOpen(false)}
-            >
-              Find Artists
-            </Link>
-            
             {!isLoggedIn ? (
-              <div className="grid grid-cols-2 gap-2 pt-2">
+              <>
                 <Link
-                  className="border-border hover:bg-muted rounded-full border px-4 py-2 text-center"
-                  href="/login"
+                  className="bg-primary text-primary-foreground rounded-full px-4 py-3 text-center mt-2"
+                  href="/artists"
                   onClick={() => setIsOpen(false)}
                 >
-                  Login
+                  Find Artists
                 </Link>
-                <Link
-                  className="border-border hover:bg-muted rounded-full border px-4 py-2 text-center"
-                  href="/register"
-                  onClick={() => setIsOpen(false)}
-                >
-                  Sign Up
-                </Link>
-              </div>
+                <div className="grid grid-cols-2 gap-2 pt-2">
+                  <Link
+                    className="border-border hover:bg-muted rounded-full border px-4 py-2 text-center"
+                    href="/login"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    Login
+                  </Link>
+                  <Link
+                    className="border-border hover:bg-muted rounded-full border px-4 py-2 text-center"
+                    href="/register"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    Sign Up
+                  </Link>
+                </div>
+              </>
             ) : (
               <button
                 className="border-destructive/30 hover:bg-destructive/10 text-destructive mt-2 rounded-full border px-4 py-2 text-center flex items-center justify-center gap-2"

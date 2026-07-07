@@ -4,16 +4,41 @@ import { MobileNav } from "@/components/layout/mobile-nav";
 import { UserNav } from "@/components/layout/user-nav";
 import { cn } from "@/lib/utils";
 import { auth } from "@/auth";
+import { isArtistRole } from "@/server/auth";
 
-const navItems = [
+const guestNavItems = [
   { href: "/#how-it-works", label: "How it works" },
   { href: "/artists", label: "Explore artists" },
   { href: "/assistant", label: "AI Assistant" },
 ] as const;
 
+const customerNavItems = [
+  { href: "/artists", label: "Find Artists" },
+  { href: "/assistant", label: "AI Assistant" },
+  { href: "/dashboard", label: "Customer Dashboard" },
+] as const;
+
+const artistNavItems = [
+  { href: "/artist-dashboard", label: "Artist Dashboard" },
+  { href: "/artist-dashboard/requests", label: "Booking Requests" },
+  { href: "/artist-dashboard/calendar", label: "Calendar" },
+  { href: "/artist-dashboard/portfolio", label: "Portfolio" },
+  { href: "/artist-dashboard/services", label: "Services" },
+  { href: "/artist-dashboard/availability", label: "Availability" },
+  { href: "/assistant", label: "AI Assistant" },
+] as const;
+
 export async function SiteHeader({ className }: Readonly<{ className?: string }>) {
   const session = await auth();
-  const isLoggedIn = Boolean(session?.user);
+  const user = session?.user;
+  console.log("[SiteHeader] user:", user);
+  const isLoggedIn = Boolean(user);
+  const isArtist = isArtistRole(user?.role);
+  const navItems = !isLoggedIn
+    ? guestNavItems
+    : isArtist
+      ? artistNavItems
+      : customerNavItems;
 
   return (
     <header
@@ -57,13 +82,15 @@ export async function SiteHeader({ className }: Readonly<{ className?: string }>
               </Link>
             </>
           ) : (
-            <UserNav user={session!.user!} />
+            <UserNav user={user!} />
           )}
-          <Link href="/artists">
-            <Button variant="primary">Find Artists</Button>
-          </Link>
+          {!isLoggedIn ? (
+            <Link href="/artists">
+              <Button variant="primary">Find Artists</Button>
+            </Link>
+          ) : null}
         </div>
-        <MobileNav items={navItems} isLoggedIn={isLoggedIn} user={session?.user} />
+        <MobileNav items={navItems} isLoggedIn={isLoggedIn} user={user} />
       </div>
     </header>
   );

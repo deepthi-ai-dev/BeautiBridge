@@ -88,12 +88,32 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         token.role = user.role;
       }
 
+      if (token.sub) {
+        try {
+          const dbUser = await db.user.findUnique({
+            where: { id: token.sub },
+            select: { role: true },
+          });
+
+          token.role = dbUser?.role ?? null;
+        } catch (error) {
+          if (
+            error instanceof Prisma.PrismaClientKnownRequestError &&
+            error.code === "P2021"
+          ) {
+            return token;
+          }
+
+          throw error;
+        }
+      }
+
       return token;
     },
     async session({ session, token }) {
       if (session.user) {
         session.user.id = token.sub ?? "";
-        session.user.role = token.role ?? null;
+        session.user.role = (token as any).role ?? null;
       }
 
       return session;

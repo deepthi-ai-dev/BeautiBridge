@@ -1,3 +1,5 @@
+import type { UserRole } from "@prisma/client";
+
 export const authRoutes = {
   login: "/login",
   register: "/register",
@@ -11,8 +13,17 @@ export const guestOnlyRoutes = [
 
 export const protectedRoutePrefixes = [
   "/dashboard",
+  "/artist-dashboard",
   "/profile",
   "/bookings",
 ] as const;
 
-export const defaultAuthenticatedRedirect = "/artists";
+export const defaultAuthenticatedRedirect = "/dashboard";
+
+export function isArtistRole(role: UserRole | null | undefined) {
+  return role === "ARTIST";
+}
+
+export function getDashboardRouteForRole(role: UserRole | null | undefined) {
+  return isArtistRole(role) ? "/artist-dashboard" : "/dashboard";
+}
