@@ -8,6 +8,8 @@ declare module "next-auth" {
       role: UserRole | null;
       phone: string | null;
       city: string | null;
+      dob?: string | null;
+      address?: string | null;
     } & DefaultSession["user"];
   }
 
@@ -15,6 +17,8 @@ declare module "next-auth" {
     role: UserRole | null;
     phone?: string | null;
     city?: string | null;
+    dob?: string | null;
+    address?: string | null;
   }
 }
 
@@ -23,5 +27,7 @@ declare module "next-auth/jwt" {
     role?: UserRole | null;
     phone?: string | null;
     city?: string | null;
+    dob?: string | null;
+    address?: string | null;
   }
 }
