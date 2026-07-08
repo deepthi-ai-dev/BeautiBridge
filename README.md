@@ -296,8 +296,3 @@ https://github.com/deepthi-ai-dev
 # 📄 License
 
 This project is licensed under the MIT License.
-
----
-
-npm run build
-```
