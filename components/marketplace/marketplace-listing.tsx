@@ -45,9 +45,9 @@ export function MarketplaceListing() {
   return (
     <>
       {/* Filters bar */}
-      <div className="sticky top-20 z-30 -mx-4 border-b border-beige-300/50 bg-white/70 px-4 py-4 backdrop-blur-2xl shadow-sm sm:-mx-0 sm:px-0 transition-all duration-300">
+      <div className="sticky top-[90px] z-30 mb-8 rounded-2xl border border-beige-300/50 bg-white/70 px-5 py-5 backdrop-blur-2xl shadow-sm transition-all duration-300">
         <ArtistFilters />
-        <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
+        <div className="mt-5 flex flex-wrap items-center justify-between gap-4">
           <p className="text-plum-700/80 text-sm font-medium">
             <span className="text-plum-900 font-bold">{total}</span>{" "}
             {total === 1 ? "artist" : "artists"} found
