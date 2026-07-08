@@ -95,8 +95,9 @@ export const { handlers, signIn, signOut, auth, unstable_update } = NextAuth({
     async jwt({ token, user, trigger, session }) {
       if (user && "role" in user) {
         token.role = user.role;
-        token.phone = (user as any).phone;
-        token.city = (user as any).city;
+        const u = user as { phone?: string | null, city?: string | null };
+        token.phone = u.phone;
+        token.city = u.city;
       }
 
       if (trigger === "update" && session) {
