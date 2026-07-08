@@ -37,7 +37,7 @@ export default async function ArtistDashboardLayout({
   }
 
   return (
-    <div className="flex h-screen overflow-hidden bg-background">
+    <div className="light-section bg-gradient-to-br from-[#fffdf9] via-[#fffbf5] to-[#f9eee1] text-foreground flex h-screen overflow-hidden">
       <div className="hidden lg:flex">
         <DashboardSidebar
           items={navItems}

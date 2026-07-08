@@ -43,7 +43,7 @@ export function CustomerDashboardShell({ user, children }: CustomerDashboardShel
   });
 
   return (
-    <div className="flex h-screen overflow-hidden bg-background">
+    <div className="light-section bg-gradient-to-br from-[#fffdf9] via-[#fffbf5] to-[#f9eee1] text-foreground flex h-screen overflow-hidden">
       {/* Desktop sidebar */}
       <div className="hidden lg:flex">
         <DashboardSidebar

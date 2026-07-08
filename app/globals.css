@@ -240,6 +240,9 @@ body {
   --border:             #ded1c2;
   --input:              #ded1c2;
   --ring:               #e69791;
+  --shadow-soft:        0 4px 20px rgb(0 0 0 / 0.05), 0 1px 4px rgb(0 0 0 / 0.02);
+  --shadow-card:        0 8px 24px rgb(0 0 0 / 0.06), 0 2px 8px rgb(0 0 0 / 0.04);
+  --shadow-premium:     0 20px 40px rgb(0 0 0 / 0.08), 0 4px 16px rgb(0 0 0 / 0.04);
 }
 
 /* ─── Card Styles ───────────────────────────────────────────────────────────── */

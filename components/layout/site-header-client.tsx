@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import type { Route } from "next";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -97,13 +98,17 @@ export function SiteHeaderClient({
         <div className="flex h-16 items-center justify-between px-4 sm:px-6">
           {/* Logo */}
           <Link
-            className="group flex items-center gap-2.5 text-base font-bold tracking-tight"
+            className="group flex items-center gap-2.5 text-base font-bold tracking-tight transition-opacity hover:opacity-90"
             href="/"
           >
-            <span className="flex size-8 items-center justify-center rounded-full bg-gradient-to-br from-salmon-300 to-primary text-xs font-black text-white shadow-soft transition-transform duration-300 group-hover:scale-105 group-hover:rotate-3">
-              B
-            </span>
-            <span className="text-primary text-lg">BeautiBridge</span>
+            <Image
+              src="/logo.png"
+              alt="BeautiBridge"
+              width={160}
+              height={40}
+              className="object-contain"
+              priority
+            />
           </Link>
 
           {/* Desktop Nav */}

@@ -39,6 +39,13 @@ export function DashboardHome({ user }: DashboardHomeProps) {
     year: "numeric",
   });
 
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return "Good morning";
+    if (hour < 17) return "Good afternoon";
+    return "Good evening";
+  };
+
   const { bookings } = useBookingStore();
 
   const upcomingBookings = bookings.filter((b) => b.status === "Upcoming");
@@ -136,18 +143,18 @@ export function DashboardHome({ user }: DashboardHomeProps) {
       )}
 
       {/* Welcome Banner */}
-      <FadeUp className="plum-panel rounded-2xl p-6 shadow-premium relative overflow-hidden">
-        <div className="absolute right-0 bottom-0 top-0 w-1/3 opacity-15 bg-radial-gradient pointer-events-none">
-          <Sparkles className="absolute right-10 top-1/2 -translate-y-1/2 size-24 text-beige-50" />
+      <FadeUp className="relative overflow-hidden rounded-2xl bg-white/70 p-6 shadow-sm border border-white/60 backdrop-blur-xl">
+        <div className="absolute right-0 bottom-0 top-0 w-1/3 opacity-30 bg-radial-gradient pointer-events-none">
+          <Sparkles className="absolute right-10 top-1/2 -translate-y-1/2 size-24 text-gold-400/40" />
         </div>
         <div className="relative z-10 space-y-2">
-          <span className="inline-block rounded-full bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-beige-50">
+          <span className="inline-block rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-primary">
             Customer Dashboard
           </span>
-          <h2 className="text-2xl font-bold text-beige-50 md:text-3xl">
-            Good morning, {name}! 👋
+          <h2 className="text-2xl font-bold text-foreground md:text-3xl flex items-center gap-2">
+            {getGreeting()}, {name}! <span className="animate-wiggle">👋</span>
           </h2>
-          <p className="text-sm text-beige-100/80">
+          <p className="text-sm text-muted-foreground">
             {todayStr} · Welcome to your personal beauty sanctuary dashboard.
           </p>
         </div>

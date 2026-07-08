@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
+import Image from "next/image";
 
 export function AuthLayout({ children }: Readonly<{ children: ReactNode }>) {
   return (
@@ -19,13 +20,17 @@ export function AuthLayout({ children }: Readonly<{ children: ReactNode }>) {
       <div className="relative w-full max-w-xl space-y-6">
         {/* Logo */}
         <Link
-          className="group flex items-center justify-center gap-2.5 transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-4 rounded-full"
+          className="group flex items-center justify-center transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-4 rounded-xl"
           href="/"
         >
-          <span className="flex size-8 items-center justify-center rounded-xl bg-gradient-to-br from-salmon-300 to-primary text-sm font-black text-white shadow-soft transition-transform duration-200 group-hover:scale-105">
-            B
-          </span>
-          <span className="text-primary text-xl font-bold tracking-tight">BeautiBridge</span>
+          <Image
+            src="/logo.png"
+            alt="BeautiBridge"
+            width={240}
+            height={60}
+            className="object-contain"
+            priority
+          />
         </Link>
         {children}
       </div>
