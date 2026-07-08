@@ -1,31 +1,63 @@
 "use client";
 
-import { useState } from "react";
-import { Camera, User, Award, Globe, Link as LinkIcon, Sparkles } from "lucide-react";
+import { useState, useTransition } from "react";
+import { Camera, User, Award, Globe, Link as LinkIcon, Sparkles, Loader2 } from "lucide-react";
 import { AvatarInitials } from "@/components/dashboard/ui-helpers";
 import { FadeUp, StaggerContainer } from "@/lib/motion";
+import { updateArtistProfileAction } from "@/features/artist/actions";
 
-export function ArtistProfileForm() {
+export function ArtistProfileForm({ user }: { user: any }) {
+  const [isPending, startTransition] = useTransition();
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
   const [about, setAbout] = useState(
-    "Award-winning bridal specialist with 5+ years of experience crafting flawless, premium makeovers for weddings, fashion shoots, and high-profile parties. Passionate about enhancing your natural radiance."
+    user?.about || ""
   );
-  const [experience, setExperience] = useState(5);
-  const [languages, setLanguages] = useState("English, Hindi, Kannada");
-  const [pricing, setPricing] = useState(2500);
-  const [instagram, setInstagram] = useState("priya_makeup_glam");
-  const [facebook, setFacebook] = useState("priya.kapoor.makeovers");
+  const [experience, setExperience] = useState(user?.experience || "");
+  const [languages, setLanguages] = useState(user?.languages || "");
+  const [pricing, setPricing] = useState(user?.pricing || 0);
+  const [instagram, setInstagram] = useState(user?.instagram || "");
+  const [facebook, setFacebook] = useState(user?.facebook || "");
   
+  const parsedSpecialties = user?.specialties ? user.specialties.split(",") : ["bridal", "party"];
   const [specialties, setSpecialties] = useState({
-    bridal: true,
-    hair: true,
-    nails: false,
-    party: true,
-    skincare: false,
+    bridal: parsedSpecialties.includes("bridal"),
+    hair: parsedSpecialties.includes("hair"),
+    nails: parsedSpecialties.includes("nails"),
+    party: parsedSpecialties.includes("party"),
+    skincare: parsedSpecialties.includes("skincare"),
   });
 
   function handleSave(e: React.FormEvent) {
     e.preventDefault();
-    alert("Artist profile configuration saved successfully!");
+    setErrorMsg(null);
+    const activeSpecialties = Object.entries(specialties)
+      .filter(([_, isActive]) => isActive)
+      .map(([key]) => key)
+      .join(",");
+
+    startTransition(async () => {
+      const res = await updateArtistProfileAction({
+        name: user?.name,
+        phone: user?.phone,
+        city: user?.city,
+        dob: user?.dob,
+        address: user?.address,
+        about,
+        experience: String(experience),
+        languages,
+        pricing: Number(pricing),
+        instagram,
+        facebook,
+        specialties: activeSpecialties,
+      });
+
+      if (res.status === "error") {
+        setErrorMsg(res.message);
+      } else {
+        alert("Artist profile configuration saved successfully!");
+      }
+    });
   }
 
   function toggleSpecialty(key: keyof typeof specialties) {
@@ -188,11 +220,14 @@ export function ArtistProfileForm() {
         </FadeUp>
 
         {/* Submit */}
+        {errorMsg && <p className="text-destructive text-sm text-right px-4">{errorMsg}</p>}
         <FadeUp className="flex justify-end pt-2 border-t border-border">
           <button
             type="submit"
-            className="rounded-full bg-primary hover:bg-plum-600 px-6 py-2.5 text-sm font-semibold text-primary-foreground shadow-soft transition-all"
+            disabled={isPending}
+            className="rounded-full bg-primary hover:bg-plum-600 px-6 py-2.5 text-sm font-semibold text-primary-foreground shadow-soft transition-all flex items-center disabled:opacity-50"
           >
+            {isPending && <Loader2 className="mr-2 size-4 animate-spin" />}
             Save Profile Config
           </button>
         </FadeUp>

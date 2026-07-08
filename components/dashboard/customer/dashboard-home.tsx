@@ -61,7 +61,7 @@ export function DashboardHome({ user }: DashboardHomeProps) {
       })
     : null;
 
-  const isProfileIncomplete = !user?.name || !user?.phone || !user?.city;
+  const isProfileIncomplete = !user?.name || !user?.phone || !user?.city || !user?.dob || !user?.address;
   const [showProfileForm, setShowProfileForm] = useState(false);
   const [isPending, startTransition] = useTransition();
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -75,6 +75,8 @@ export function DashboardHome({ user }: DashboardHomeProps) {
       name: formData.get("name") as string,
       phone: formData.get("phone") as string,
       city: formData.get("city") as string,
+      dob: formData.get("dob") as string,
+      address: formData.get("address") as string,
     };
 
     startTransition(async () => {
@@ -115,7 +117,7 @@ export function DashboardHome({ user }: DashboardHomeProps) {
                 <AlertTriangle className="size-4 text-warning" />
                 <h3 className="text-sm font-semibold text-warning-foreground">Complete Profile</h3>
               </div>
-              <div className="grid gap-4 sm:grid-cols-3">
+              <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
                 <div className="space-y-1.5">
                   <label className="text-xs font-medium" htmlFor="profile-name">Name</label>
                   <Input id="profile-name" name="name" defaultValue={user?.name ?? ""} required placeholder="Your name" />
@@ -127,6 +129,14 @@ export function DashboardHome({ user }: DashboardHomeProps) {
                 <div className="space-y-1.5">
                   <label className="text-xs font-medium" htmlFor="profile-city">City</label>
                   <Input id="profile-city" name="city" defaultValue={user?.city ?? ""} required placeholder="Your city" />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-xs font-medium" htmlFor="profile-dob">Date of Birth</label>
+                  <Input id="profile-dob" name="dob" type="date" defaultValue={user?.dob ?? ""} required />
+                </div>
+                <div className="space-y-1.5 md:col-span-2">
+                  <label className="text-xs font-medium" htmlFor="profile-address">Address</label>
+                  <Input id="profile-address" name="address" defaultValue={user?.address ?? ""} required placeholder="Full Address" />
                 </div>
               </div>
               {errorMsg && <p className="text-destructive text-xs">{errorMsg}</p>}

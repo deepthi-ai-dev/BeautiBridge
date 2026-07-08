@@ -17,7 +17,7 @@ import { getSafeCallbackUrl } from "@/features/auth/redirect";
 import { registerSchema, roleSelectionSchema } from "@/features/auth/schemas";
 
 export type AuthActionResult = {
-  fieldErrors?: Partial<Record<"name" | "phone" | "city" | "email" | "password" | "confirmPassword", string>>;
+  fieldErrors?: Partial<Record<"name" | "phone" | "city" | "email" | "password" | "confirmPassword" | "dob" | "address" | "experience" | "about" | "languages" | "hobbies", string>>;
   message: string;
   status: "error" | "success";
 };
@@ -43,6 +43,12 @@ export async function registerUserAction(
         name: fieldErrors.name?.[0],
         phone: fieldErrors.phone?.[0],
         city: fieldErrors.city?.[0],
+        dob: fieldErrors.dob?.[0],
+        address: fieldErrors.address?.[0],
+        experience: fieldErrors.experience?.[0],
+        about: fieldErrors.about?.[0],
+        languages: fieldErrors.languages?.[0],
+        hobbies: fieldErrors.hobbies?.[0],
         confirmPassword: fieldErrors.confirmPassword?.[0],
         email: fieldErrors.email?.[0],
         password: fieldErrors.password?.[0],
@@ -93,6 +99,12 @@ export async function registerUserAction(
         name: parsedInput.data.name,
         phone: parsedInput.data.phone,
         city: parsedInput.data.city,
+        dob: parsedInput.data.dob,
+        address: parsedInput.data.address,
+        experience: parsedInput.data.experience,
+        about: parsedInput.data.about,
+        languages: parsedInput.data.languages,
+        hobbies: parsedInput.data.hobbies,
         email: parsedInput.data.email,
         password: hashedPassword,
         role: parsedInput.data.role,
@@ -165,6 +177,8 @@ const completeProfileSchema = z.object({
   name: z.string().min(2, "Name is required"),
   phone: z.string().min(10, "Valid phone is required"),
   city: z.string().min(2, "City is required"),
+  dob: z.string().min(2, "Date of birth is required"),
+  address: z.string().min(5, "Address is required"),
 });
 
 export async function completeUserProfileAction(input: unknown) {
@@ -186,6 +200,8 @@ export async function completeUserProfileAction(input: unknown) {
         name: parsed.data.name,
         phone: parsed.data.phone,
         city: parsed.data.city,
+        dob: parsed.data.dob,
+        address: parsed.data.address,
       }
     });
 

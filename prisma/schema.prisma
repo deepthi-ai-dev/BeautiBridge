@@ -17,6 +17,16 @@ model User {
   name          String?
   phone         String?
   city          String?
+  dob           String?
+  address       String?
+  experience    String?
+  about         String?
+  languages     String?
+  hobbies       String?
+  instagram     String?
+  facebook      String?
+  pricing       Int?
+  specialties   String?
   email         String?   @unique
   emailVerified DateTime?
   image         String?

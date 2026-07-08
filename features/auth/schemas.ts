@@ -29,16 +29,33 @@ export const registerSchema = z
     name: z.string().min(2, "Name must be at least 2 characters long."),
     phone: z.string().min(10, "Phone number must be at least 10 characters long."),
     city: z.string().min(2, "City is required."),
+    dob: z.string().min(2, "Date of birth is required."),
+    address: z.string().min(5, "Address is required."),
     confirmPassword: z.string().min(1, "Confirm your password."),
     email: emailSchema,
     password: passwordSchema,
     role: z.nativeEnum(UserRole, {
       error: "Choose whether you are a customer or beauty artist.",
     }),
+    experience: z.string().optional(),
+    about: z.string().optional(),
+    languages: z.string().optional(),
+    hobbies: z.string().optional(),
   })
-  .refine((values) => values.password === values.confirmPassword, {
-    message: "Passwords do not match.",
-    path: ["confirmPassword"],
+  .superRefine((values, ctx) => {
+    if (values.password !== values.confirmPassword) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Passwords do not match.",
+        path: ["confirmPassword"],
+      });
+    }
+    if (values.role === UserRole.ARTIST) {
+      if (!values.experience) ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Experience is required.", path: ["experience"] });
+      if (!values.about) ctx.addIssue({ code: z.ZodIssueCode.custom, message: "About is required.", path: ["about"] });
+      if (!values.languages) ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Languages are required.", path: ["languages"] });
+      if (!values.hobbies) ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Hobbies are required.", path: ["hobbies"] });
+    }
   });
 
 export const roleSelectionSchema = z.object({

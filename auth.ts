@@ -105,6 +105,8 @@ export const { handlers, signIn, signOut, auth, unstable_update } = NextAuth({
         if (payload.phone !== undefined) token.phone = payload.phone;
         if (payload.city !== undefined) token.city = payload.city;
         if (payload.name !== undefined) token.name = payload.name;
+        if (payload.dob !== undefined) token.dob = payload.dob;
+        if (payload.address !== undefined) token.address = payload.address;
       }
 
       // Only fetch from DB if role is strictly missing 

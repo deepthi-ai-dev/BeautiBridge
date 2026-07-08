@@ -1,29 +1,44 @@
 "use client";
 
-import { useState } from "react";
-import { Camera, User, Mail, Phone, Calendar, MapPin } from "lucide-react";
+import { useState, useTransition } from "react";
+import { Camera, User, Mail, Phone, Calendar, MapPin, Loader2 } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { FadeUp, StaggerContainer } from "@/lib/motion";
+import { completeUserProfileAction } from "@/features/auth/actions";
 
 interface ProfileFormProps {
-  user?: {
-    name?: string | null;
-    email?: string | null;
-    image?: string | null;
-  };
+  user?: any;
 }
 
 export function ProfileForm({ user }: ProfileFormProps) {
-  const [name, setName] = useState(user?.name || "Jahnvi Sharma");
-  const [email, setEmail] = useState(user?.email || "jahnvi.sharma@example.com");
-  const [phone, setPhone] = useState("+91 98765 43210");
-  const [birthday, setBirthday] = useState("1996-04-12");
-  const [gender, setGender] = useState("female");
-  const [address, setAddress] = useState("5th Block, Koramangala, Bangalore, Karnataka - 560095");
+  const [isPending, startTransition] = useTransition();
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+  const [name, setName] = useState(user?.name || "");
+  const [email, setEmail] = useState(user?.email || "");
+  const [phone, setPhone] = useState(user?.phone || "");
+  const [birthday, setBirthday] = useState(user?.dob || "");
+  const [city, setCity] = useState(user?.city || "");
+  const [address, setAddress] = useState(user?.address || "");
 
   function handleSave(e: React.FormEvent) {
     e.preventDefault();
-    alert("Profile changes saved successfully!");
+    setErrorMsg(null);
+    startTransition(async () => {
+      const res = await completeUserProfileAction({
+        name,
+        phone,
+        city,
+        dob: birthday,
+        address,
+      });
+
+      if (res.status === "error") {
+        setErrorMsg(res.message);
+      } else {
+        alert("Profile changes saved successfully!");
+      }
+    });
   }
 
   function handlePhotoChange() {
@@ -135,22 +150,19 @@ export function ProfileForm({ user }: ProfileFormProps) {
             />
           </div>
 
-          {/* Gender */}
+          {/* City */}
           <div className="space-y-1.5">
-            <label htmlFor="gender-input" className="text-xs font-semibold text-muted-foreground flex items-center gap-1.5">
-              <User className="size-3.5" /> Gender
+            <label htmlFor="city-input" className="text-xs font-semibold text-muted-foreground flex items-center gap-1.5">
+              <MapPin className="size-3.5" /> City
             </label>
-            <select
-              id="gender-input"
-              value={gender}
-              onChange={(e) => setGender(e.target.value)}
+            <input
+              id="city-input"
+              type="text"
+              required
+              value={city}
+              onChange={(e) => setCity(e.target.value)}
               className="w-full rounded-xl border border-border bg-card px-4 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring/30"
-            >
-              <option value="female">Female</option>
-              <option value="male">Male</option>
-              <option value="non-binary">Non-binary</option>
-              <option value="prefer-not-to-say">Prefer not to say</option>
-            </select>
+            />
           </div>
 
           {/* Address */}
@@ -169,11 +181,14 @@ export function ProfileForm({ user }: ProfileFormProps) {
         </FadeUp>
 
         {/* Submit */}
+        {errorMsg && <p className="text-destructive text-sm text-right px-4">{errorMsg}</p>}
         <FadeUp className="flex justify-end pt-2">
           <button
             type="submit"
-            className="rounded-full bg-primary hover:bg-plum-600 px-6 py-2.5 text-sm font-semibold text-primary-foreground shadow-soft transition-all"
+            disabled={isPending}
+            className="rounded-full bg-primary hover:bg-plum-600 px-6 py-2.5 text-sm font-semibold text-primary-foreground shadow-soft transition-all flex items-center disabled:opacity-50"
           >
+            {isPending && <Loader2 className="mr-2 size-4 animate-spin" />}
             Save Changes
           </button>
         </FadeUp>

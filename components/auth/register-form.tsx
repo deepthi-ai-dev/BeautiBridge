@@ -52,11 +52,18 @@ export function RegisterForm({
     handleSubmit,
     register,
     setError,
+    watch,
   } = useForm<RegisterFormValues>({
     defaultValues: {
       name: "",
       phone: "",
       city: "",
+      dob: "",
+      address: "",
+      experience: "",
+      about: "",
+      languages: "",
+      hobbies: "",
       confirmPassword: "",
       email: "",
       password: "",
@@ -197,6 +204,123 @@ export function RegisterForm({
             ) : null}
           </div>
         </div>
+
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div className="space-y-1.5">
+            <label className="text-sm font-medium" htmlFor="register-dob">
+              Date of Birth
+            </label>
+            <Input
+              aria-describedby={errors.dob ? "register-dob-error" : undefined}
+              aria-invalid={Boolean(errors.dob)}
+              autoComplete="bday"
+              id="register-dob"
+              type="date"
+              {...register("dob")}
+            />
+            {errors.dob ? (
+              <p className="text-destructive text-sm" id="register-dob-error" role="alert">
+                {errors.dob.message}
+              </p>
+            ) : null}
+          </div>
+
+          <div className="space-y-1.5">
+            <label className="text-sm font-medium" htmlFor="register-address">
+              Address
+            </label>
+            <Input
+              aria-describedby={errors.address ? "register-address-error" : undefined}
+              aria-invalid={Boolean(errors.address)}
+              autoComplete="street-address"
+              id="register-address"
+              placeholder="123 Beauty Lane"
+              type="text"
+              {...register("address")}
+            />
+            {errors.address ? (
+              <p className="text-destructive text-sm" id="register-address-error" role="alert">
+                {errors.address.message}
+              </p>
+            ) : null}
+          </div>
+        </div>
+
+        {selectedRole === UserRole.ARTIST && (
+          <FadeUp className="space-y-5 rounded-xl border border-primary/20 bg-primary/5 p-4">
+            <h3 className="text-sm font-semibold text-primary">Artist Profile Details</h3>
+            
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-1.5">
+                <label className="text-xs font-medium" htmlFor="register-experience">
+                  Years of Experience
+                </label>
+                <Input
+                  aria-describedby={errors.experience ? "register-exp-error" : undefined}
+                  aria-invalid={Boolean(errors.experience)}
+                  id="register-experience"
+                  placeholder="e.g. 5"
+                  type="text"
+                  {...register("experience")}
+                />
+                {errors.experience ? (
+                  <p className="text-destructive text-xs" id="register-exp-error" role="alert">{errors.experience.message}</p>
+                ) : null}
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs font-medium" htmlFor="register-languages">
+                  Spoken Languages
+                </label>
+                <Input
+                  aria-describedby={errors.languages ? "register-lang-error" : undefined}
+                  aria-invalid={Boolean(errors.languages)}
+                  id="register-languages"
+                  placeholder="English, Hindi, etc."
+                  type="text"
+                  {...register("languages")}
+                />
+                {errors.languages ? (
+                  <p className="text-destructive text-xs" id="register-lang-error" role="alert">{errors.languages.message}</p>
+                ) : null}
+              </div>
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="text-xs font-medium" htmlFor="register-about">
+                Professional Bio / About
+              </label>
+              <Input
+                aria-describedby={errors.about ? "register-about-error" : undefined}
+                aria-invalid={Boolean(errors.about)}
+                id="register-about"
+                placeholder="Tell clients about your expertise..."
+                type="text"
+                {...register("about")}
+              />
+              {errors.about ? (
+                <p className="text-destructive text-xs" id="register-about-error" role="alert">{errors.about.message}</p>
+              ) : null}
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="text-xs font-medium" htmlFor="register-hobbies">
+                Hobbies & Interests
+              </label>
+              <Input
+                aria-describedby={errors.hobbies ? "register-hobbies-error" : undefined}
+                aria-invalid={Boolean(errors.hobbies)}
+                id="register-hobbies"
+                placeholder="What do you do for fun?"
+                type="text"
+                {...register("hobbies")}
+              />
+              {errors.hobbies ? (
+                <p className="text-destructive text-xs" id="register-hobbies-error" role="alert">{errors.hobbies.message}</p>
+              ) : null}
+            </div>
+          </FadeUp>
+        )}
 
         <div className="space-y-1.5">
           <label className="text-sm font-medium" htmlFor="register-email">

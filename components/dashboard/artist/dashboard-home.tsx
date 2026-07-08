@@ -8,7 +8,7 @@ import { AvatarInitials } from "@/components/dashboard/ui-helpers";
 import { MOCK_APPOINTMENTS } from "@/lib/mock-data";
 import { FadeUp, StaggerContainer } from "@/lib/motion";
 
-export function DashboardHome() {
+export function DashboardHome({ user }: { user?: any }) {
   const todayStr = "Thursday, 7 August 2025";
 
   const getGreeting = () => {
@@ -25,8 +25,31 @@ export function DashboardHome() {
 
   const pendingRequests = MOCK_APPOINTMENTS.filter((apt) => apt.status === "pending");
 
+  const isProfileIncomplete = !user?.name || !user?.phone || !user?.city || !user?.dob || !user?.address || !user?.experience || !user?.about || !user?.languages;
+
   return (
     <StaggerContainer className="space-y-6">
+      {isProfileIncomplete && (
+        <FadeUp className="rounded-xl border border-warning/20 bg-warning/10 p-4">
+          <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+            <div className="flex gap-3">
+              <AlertCircle className="size-5 text-warning shrink-0 mt-0.5" />
+              <div>
+                <h3 className="text-sm font-semibold text-warning-foreground">
+                  Complete your Studio Profile
+                </h3>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  Please provide your complete details, experience, and bio to start receiving bookings.
+                </p>
+              </div>
+            </div>
+            <Link href="/artist-dashboard/profile" className="rounded-md bg-warning text-warning-foreground px-4 py-2 text-sm font-semibold shadow-sm hover:opacity-90 shrink-0">
+              Update Profile
+            </Link>
+          </div>
+        </FadeUp>
+      )}
+
       {/* Welcome Banner */}
       <FadeUp className="relative overflow-hidden rounded-2xl bg-white/70 p-6 shadow-sm border border-white/60 backdrop-blur-xl">
         <div className="absolute right-0 bottom-0 top-0 w-1/3 opacity-30 bg-radial-gradient pointer-events-none">
@@ -37,7 +60,7 @@ export function DashboardHome() {
             Artist Dashboard
           </span>
           <h2 className="text-2xl font-bold text-foreground md:text-3xl flex items-center gap-2">
-            {getGreeting()}, Artist Studio! <span className="animate-wiggle">🎨</span>
+            {getGreeting()}, {user?.name ? user.name.split(" ")[0] : "Artist Studio"}! <span className="animate-wiggle">🎨</span>
           </h2>
           <p className="text-sm text-muted-foreground">
             {todayStr} · Here&apos;s your studio overview for today.
