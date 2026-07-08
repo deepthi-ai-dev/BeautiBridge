@@ -83,12 +83,17 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   adapter: PrismaAdapter(db),
   providers,
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger, session }) {
       if (user && "role" in user) {
         token.role = user.role;
       }
 
-      if (token.sub) {
+      if (trigger === "update" && session?.role) {
+        token.role = session.role;
+      }
+
+      // Only fetch from DB if role is strictly missing 
+      if (token.sub && !token.role) {
         try {
           const dbUser = await db.user.findUnique({
             where: { id: token.sub },
@@ -103,7 +108,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           ) {
             return token;
           }
-
           throw error;
         }
       }
@@ -126,5 +130,4 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   session: {
     strategy: "jwt",
   },
-  useSecureCookies: authConfig.isProduction,
 });

@@ -26,7 +26,6 @@ export function resolveAuthSecret() {
   }
 
   const appUrl = normalizeEnvValue(process.env.NEXT_PUBLIC_APP_URL);
-  const databaseUrl = normalizeEnvValue(process.env.DATABASE_URL);
 
-  return `${databaseUrl ?? "local-db"}:${appUrl ?? "local-app-url"}:auth-fallback`;
+  return `${appUrl ?? "local-app-url"}:auth-fallback-secret`;
 }
