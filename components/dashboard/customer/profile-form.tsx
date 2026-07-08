@@ -7,7 +7,7 @@ import { FadeUp, StaggerContainer } from "@/lib/motion";
 import { completeUserProfileAction } from "@/features/auth/actions";
 
 interface ProfileFormProps {
-  user?: any;
+  user?: { name?: string | null, email?: string | null, phone?: string | null, dob?: string | null, city?: string | null, address?: string | null, image?: string | null };
 }
 
 export function ProfileForm({ user }: ProfileFormProps) {

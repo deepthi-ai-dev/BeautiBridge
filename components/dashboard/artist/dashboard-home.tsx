@@ -8,7 +8,7 @@ import { AvatarInitials } from "@/components/dashboard/ui-helpers";
 import { MOCK_APPOINTMENTS } from "@/lib/mock-data";
 import { FadeUp, StaggerContainer } from "@/lib/motion";
 
-export function DashboardHome({ user }: { user?: any }) {
+export function DashboardHome({ user }: { user?: { name?: string | null, phone?: string | null, city?: string | null, dob?: string | null, address?: string | null, experience?: string | null, about?: string | null, languages?: string | null } }) {
   const todayStr = "Thursday, 7 August 2025";
 
   const getGreeting = () => {

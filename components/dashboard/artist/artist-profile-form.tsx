@@ -6,7 +6,7 @@ import { AvatarInitials } from "@/components/dashboard/ui-helpers";
 import { FadeUp, StaggerContainer } from "@/lib/motion";
 import { updateArtistProfileAction } from "@/features/artist/actions";
 
-export function ArtistProfileForm({ user }: { user: any }) {
+export function ArtistProfileForm({ user }: { user: { name?: string | null, phone?: string | null, city?: string | null, dob?: string | null, address?: string | null, experience?: string | null, about?: string | null, languages?: string | null, pricing?: number | null, instagram?: string | null, facebook?: string | null, specialties?: string | null } }) {
   const [isPending, startTransition] = useTransition();
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
