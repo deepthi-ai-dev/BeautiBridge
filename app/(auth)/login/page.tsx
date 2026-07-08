@@ -27,7 +27,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
         googleDisabledReason={
           readiness.canUseGoogleOAuth
             ? null
-            : "Google sign-in is unavailable. Add AUTH_GOOGLE_ID and AUTH_GOOGLE_SECRET in .env."
+            : "Google sign-in currently unavailable."
         }
         isGoogleOAuthAvailable={readiness.canUseGoogleOAuth}
         isReady={!readiness.hasBlockingIssue}

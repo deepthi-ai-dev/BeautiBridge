@@ -3,9 +3,9 @@ import Link from "next/link";
 
 export function AuthLayout({ children }: Readonly<{ children: ReactNode }>) {
   return (
-    <main className="relative flex min-h-screen items-center justify-center overflow-hidden px-4 py-8 md:px-6 md:py-12">
+    <main className="light-section bg-[linear-gradient(180deg,rgba(255,248,239,0.8),rgba(255,244,234,0.6))] text-foreground relative flex min-h-screen items-center justify-center overflow-hidden px-4 py-8 md:px-6 md:py-12">
       {/* Background */}
-      <div className="warm-surface absolute inset-0 -z-10" />
+      <div className="absolute inset-0 -z-10" />
       {/* Decorative blobs */}
       <div
         aria-hidden

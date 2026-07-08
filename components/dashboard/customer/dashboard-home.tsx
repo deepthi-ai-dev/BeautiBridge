@@ -1,11 +1,16 @@
 "use client";
 
-import { Calendar, CheckCircle, Heart, Bot, ArrowRight, Sparkles } from "lucide-react";
+import { AlertTriangle, Loader2, Calendar, CheckCircle, Heart, Bot, ArrowRight, Sparkles } from "lucide-react";
 import Link from "next/link";
 import type { Route } from "next";
+import { useRouter } from "next/navigation";
+import { useState, useTransition } from "react";
 import { StatCard } from "@/components/dashboard/stat-card";
 import { StatusBadge } from "@/components/dashboard/ui-helpers";
 import Image from "next/image";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { completeUserProfileAction } from "@/features/auth/actions";
 import {
   MOCK_ACTIVITIES,
   MOCK_FAVORITE_ARTISTS,
@@ -20,6 +25,8 @@ interface DashboardHomeProps {
     name?: string | null;
     email?: string | null;
     image?: string | null;
+    phone?: string | null;
+    city?: string | null;
   };
 }
 
@@ -47,8 +54,87 @@ export function DashboardHome({ user }: DashboardHomeProps) {
       })
     : null;
 
+  const isProfileIncomplete = !user?.name || !user?.phone || !user?.city;
+  const [showProfileForm, setShowProfileForm] = useState(false);
+  const [isPending, startTransition] = useTransition();
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const router = useRouter();
+
+  const handleProfileSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setErrorMsg(null);
+    const formData = new FormData(e.currentTarget);
+    const data = {
+      name: formData.get("name") as string,
+      phone: formData.get("phone") as string,
+      city: formData.get("city") as string,
+    };
+
+    startTransition(async () => {
+      const res = await completeUserProfileAction(data);
+      if (res.status === "error") {
+        setErrorMsg(res.message);
+      } else {
+        setShowProfileForm(false);
+        router.refresh(); // to update user session data and hide banner
+      }
+    });
+  };
+
   return (
     <StaggerContainer className="space-y-6">
+      {isProfileIncomplete && (
+        <FadeUp className="rounded-xl border border-warning/20 bg-warning/10 p-4">
+          {!showProfileForm ? (
+            <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+              <div className="flex gap-3">
+                <AlertTriangle className="size-5 text-warning shrink-0 mt-0.5" />
+                <div>
+                  <h3 className="text-sm font-semibold text-warning-foreground">
+                    Complete your profile
+                  </h3>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    Please provide your name, phone number, and city to unlock all features.
+                  </p>
+                </div>
+              </div>
+              <Button size="sm" onClick={() => setShowProfileForm(true)}>
+                Complete Profile
+              </Button>
+            </div>
+          ) : (
+            <form onSubmit={handleProfileSubmit} className="space-y-4">
+              <div className="flex gap-2 items-center mb-2">
+                <AlertTriangle className="size-4 text-warning" />
+                <h3 className="text-sm font-semibold text-warning-foreground">Complete Profile</h3>
+              </div>
+              <div className="grid gap-4 sm:grid-cols-3">
+                <div className="space-y-1.5">
+                  <label className="text-xs font-medium" htmlFor="profile-name">Name</label>
+                  <Input id="profile-name" name="name" defaultValue={user?.name ?? ""} required placeholder="Your name" />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-xs font-medium" htmlFor="profile-phone">Phone</label>
+                  <Input id="profile-phone" name="phone" type="tel" defaultValue={user?.phone ?? ""} required placeholder="Your phone number" />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-xs font-medium" htmlFor="profile-city">City</label>
+                  <Input id="profile-city" name="city" defaultValue={user?.city ?? ""} required placeholder="Your city" />
+                </div>
+              </div>
+              {errorMsg && <p className="text-destructive text-xs">{errorMsg}</p>}
+              <div className="flex justify-end gap-2">
+                <Button type="button" variant="outline" size="sm" onClick={() => setShowProfileForm(false)} disabled={isPending}>Cancel</Button>
+                <Button type="submit" size="sm" disabled={isPending}>
+                  {isPending && <Loader2 className="mr-2 size-3 animate-spin" />}
+                  Save Details
+                </Button>
+              </div>
+            </form>
+          )}
+        </FadeUp>
+      )}
+
       {/* Welcome Banner */}
       <FadeUp className="plum-panel rounded-2xl p-6 shadow-premium relative overflow-hidden">
         <div className="absolute right-0 bottom-0 top-0 w-1/3 opacity-15 bg-radial-gradient pointer-events-none">

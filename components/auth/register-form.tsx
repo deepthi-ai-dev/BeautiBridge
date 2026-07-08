@@ -54,6 +54,9 @@ export function RegisterForm({
     setError,
   } = useForm<RegisterFormValues>({
     defaultValues: {
+      name: "",
+      phone: "",
+      city: "",
       confirmPassword: "",
       email: "",
       password: "",
@@ -69,6 +72,15 @@ export function RegisterForm({
       const response = await registerUserAction(values);
 
       if (response.status === "error") {
+        if (response.fieldErrors?.name) {
+          setError("name", { message: response.fieldErrors.name });
+        }
+        if (response.fieldErrors?.phone) {
+          setError("phone", { message: response.fieldErrors.phone });
+        }
+        if (response.fieldErrors?.city) {
+          setError("city", { message: response.fieldErrors.city });
+        }
         if (response.fieldErrors?.email) {
           setError("email", { message: response.fieldErrors.email });
         }
@@ -124,6 +136,68 @@ export function RegisterForm({
       </div>
 
       <form className="space-y-5" onSubmit={handleSubmit(onSubmit)}>
+        <div className="space-y-1.5">
+          <label className="text-sm font-medium" htmlFor="register-name">
+            Full Name
+          </label>
+          <Input
+            aria-describedby={errors.name ? "register-name-error" : undefined}
+            aria-invalid={Boolean(errors.name)}
+            autoComplete="name"
+            id="register-name"
+            placeholder="John Doe"
+            type="text"
+            {...register("name")}
+          />
+          {errors.name ? (
+            <p className="text-destructive text-sm" id="register-name-error" role="alert">
+              {errors.name.message}
+            </p>
+          ) : null}
+        </div>
+
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div className="space-y-1.5">
+            <label className="text-sm font-medium" htmlFor="register-phone">
+              Phone Number
+            </label>
+            <Input
+              aria-describedby={errors.phone ? "register-phone-error" : undefined}
+              aria-invalid={Boolean(errors.phone)}
+              autoComplete="tel"
+              id="register-phone"
+              placeholder="+91 9876543210"
+              type="tel"
+              {...register("phone")}
+            />
+            {errors.phone ? (
+              <p className="text-destructive text-sm" id="register-phone-error" role="alert">
+                {errors.phone.message}
+              </p>
+            ) : null}
+          </div>
+
+          <div className="space-y-1.5">
+            <label className="text-sm font-medium" htmlFor="register-city">
+              City
+            </label>
+            <Input
+              aria-describedby={errors.city ? "register-city-error" : undefined}
+              aria-invalid={Boolean(errors.city)}
+              autoComplete="address-level2"
+              id="register-city"
+              placeholder="Mumbai"
+              type="text"
+              {...register("city")}
+            />
+            {errors.city ? (
+              <p className="text-destructive text-sm" id="register-city-error" role="alert">
+                {errors.city.message}
+              </p>
+            ) : null}
+          </div>
+        </div>
+
         <div className="space-y-1.5">
           <label className="text-sm font-medium" htmlFor="register-email">
             Email

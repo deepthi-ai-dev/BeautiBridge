@@ -36,6 +36,8 @@ const providers: Provider[] = [
             id: true,
             image: true,
             name: true,
+            phone: true,
+            city: true,
             password: true,
             role: true,
           },
@@ -59,6 +61,8 @@ const providers: Provider[] = [
           id: user.id,
           image: user.image,
           name: user.name,
+          phone: user.phone,
+          city: user.city,
           role: user.role,
         };
       } catch (error) {
@@ -91,10 +95,15 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     async jwt({ token, user, trigger, session }) {
       if (user && "role" in user) {
         token.role = user.role;
+        token.phone = (user as any).phone;
+        token.city = (user as any).city;
       }
 
-      if (trigger === "update" && session?.role) {
-        token.role = session.role;
+      if (trigger === "update" && session) {
+        if (session.role !== undefined) token.role = session.role;
+        if (session.phone !== undefined) token.phone = session.phone;
+        if (session.city !== undefined) token.city = session.city;
+        if (session.name !== undefined) token.name = session.name;
       }
 
       // Only fetch from DB if role is strictly missing 
@@ -102,10 +111,12 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         try {
           const dbUser = await db.user.findUnique({
             where: { id: token.sub },
-            select: { role: true },
+            select: { role: true, phone: true, city: true },
           });
 
           token.role = dbUser?.role ?? null;
+          token.phone = dbUser?.phone ?? null;
+          token.city = dbUser?.city ?? null;
         } catch (error) {
           if (
             error instanceof Prisma.PrismaClientKnownRequestError &&
@@ -123,6 +134,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       if (session.user) {
         session.user.id = token.sub ?? "";
         session.user.role = (token.role as UserRole) ?? null;
+        session.user.phone = (token.phone as string) ?? null;
+        session.user.city = (token.city as string) ?? null;
       }
 
       return session;

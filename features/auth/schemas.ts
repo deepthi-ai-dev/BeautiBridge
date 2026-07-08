@@ -26,6 +26,9 @@ export const credentialsLoginSchema = loginSchema.extend({
 
 export const registerSchema = z
   .object({
+    name: z.string().min(2, "Name must be at least 2 characters long."),
+    phone: z.string().min(10, "Phone number must be at least 10 characters long."),
+    city: z.string().min(2, "City is required."),
     confirmPassword: z.string().min(1, "Confirm your password."),
     email: emailSchema,
     password: passwordSchema,

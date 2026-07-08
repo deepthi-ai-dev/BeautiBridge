@@ -1,5 +1,7 @@
 "use server";
 
+import { z } from "zod";
+
 import { UserRole } from "@prisma/client";
 import { Prisma } from "@prisma/client";
 import type { Route } from "next";
@@ -15,7 +17,7 @@ import { getSafeCallbackUrl } from "@/features/auth/redirect";
 import { registerSchema, roleSelectionSchema } from "@/features/auth/schemas";
 
 export type AuthActionResult = {
-  fieldErrors?: Partial<Record<"email" | "password" | "confirmPassword", string>>;
+  fieldErrors?: Partial<Record<"name" | "phone" | "city" | "email" | "password" | "confirmPassword", string>>;
   message: string;
   status: "error" | "success";
 };
@@ -38,6 +40,9 @@ export async function registerUserAction(
 
     return {
       fieldErrors: {
+        name: fieldErrors.name?.[0],
+        phone: fieldErrors.phone?.[0],
+        city: fieldErrors.city?.[0],
         confirmPassword: fieldErrors.confirmPassword?.[0],
         email: fieldErrors.email?.[0],
         password: fieldErrors.password?.[0],
@@ -85,6 +90,9 @@ export async function registerUserAction(
   try {
     await db.user.create({
       data: {
+        name: parsedInput.data.name,
+        phone: parsedInput.data.phone,
+        city: parsedInput.data.city,
         email: parsedInput.data.email,
         password: hashedPassword,
         role: parsedInput.data.role,
@@ -151,4 +159,28 @@ export async function selectUserRoleAction(input: unknown) {
       defaultAuthenticatedRedirect,
     ) as Route,
   );
+}
+
+const completeProfileSchema = z.object({
+  name: z.string().min(2, "Name is required"),
+  phone: z.string().min(10, "Valid phone is required"),
+  city: z.string().min(2, "City is required"),
+});
+
+export async function completeUserProfileAction(input: unknown) {
+  const session = await auth();
+  if (!session?.user?.id) return { status: "error", message: "Unauthorized" };
+
+  const parsed = completeProfileSchema.safeParse(input);
+  if (!parsed.success) return { status: "error", message: "Invalid fields" };
+
+  try {
+    await db.user.update({
+      where: { id: session.user.id },
+      data: parsed.data,
+    });
+    return { status: "success", message: "Profile updated successfully" };
+  } catch (error) {
+    return { status: "error", message: "Failed to update profile" };
+  }
 }

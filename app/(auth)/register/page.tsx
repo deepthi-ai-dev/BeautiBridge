@@ -26,7 +26,7 @@ export default async function RegisterPage({ searchParams }: RegisterPageProps) 
         googleDisabledReason={
           readiness.canUseGoogleOAuth
             ? null
-            : "Google sign-up is unavailable. Add AUTH_GOOGLE_ID and AUTH_GOOGLE_SECRET in .env."
+            : "Google sign-in currently unavailable."
         }
         isGoogleOAuthAvailable={readiness.canUseGoogleOAuth}
         isReady={!readiness.hasBlockingIssue}
