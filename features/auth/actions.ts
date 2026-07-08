@@ -7,7 +7,7 @@ import { Prisma } from "@prisma/client";
 import type { Route } from "next";
 import { hash } from "bcryptjs";
 import { redirect } from "next/navigation";
-import { auth } from "@/auth";
+import { auth, unstable_update } from "@/auth";
 import { db } from "@/server/db";
 import {
   defaultAuthenticatedRedirect,
@@ -179,6 +179,16 @@ export async function completeUserProfileAction(input: unknown) {
       where: { id: session.user.id },
       data: parsed.data,
     });
+    
+    // Update the JWT session cookie to reflect the new data immediately
+    await unstable_update({
+      user: {
+        name: parsed.data.name,
+        phone: parsed.data.phone,
+        city: parsed.data.city,
+      }
+    });
+
     return { status: "success", message: "Profile updated successfully" };
   } catch (error) {
     return { status: "error", message: "Failed to update profile" };

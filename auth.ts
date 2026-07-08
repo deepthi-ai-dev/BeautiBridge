@@ -88,7 +88,7 @@ if (authConfig.isGoogleOAuthEnabled) {
   );
 }
 
-export const { handlers, signIn, signOut, auth } = NextAuth({
+export const { handlers, signIn, signOut, auth, unstable_update } = NextAuth({
   adapter: PrismaAdapter(db),
   providers,
   callbacks: {
@@ -100,10 +100,11 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       }
 
       if (trigger === "update" && session) {
-        if (session.role !== undefined) token.role = session.role;
-        if (session.phone !== undefined) token.phone = session.phone;
-        if (session.city !== undefined) token.city = session.city;
-        if (session.name !== undefined) token.name = session.name;
+        const payload = session.user || session;
+        if (payload.role !== undefined) token.role = payload.role;
+        if (payload.phone !== undefined) token.phone = payload.phone;
+        if (payload.city !== undefined) token.city = payload.city;
+        if (payload.name !== undefined) token.name = payload.name;
       }
 
       // Only fetch from DB if role is strictly missing 
