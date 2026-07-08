@@ -15,15 +15,20 @@ export default function ArtistsPage() {
       <SiteHeader />
       <main className="min-h-screen">
         {/* Hero banner */}
-        <div className="warm-surface border-b border-border py-12">
-          <div className="page-container">
-            <p className="text-secondary text-xs font-semibold tracking-[0.42em] uppercase">
+        <div className="relative overflow-hidden bg-gradient-to-br from-beige-100 to-salmon-300/20 border-b border-border py-16 md:py-24">
+          {/* Decorative blur blobs */}
+          <div className="absolute top-0 left-1/4 h-64 w-64 -translate-y-1/2 translate-x-1/2 rounded-full bg-salmon-300/20 blur-[80px]" />
+          <div className="absolute bottom-0 right-1/4 h-64 w-64 translate-y-1/2 -translate-x-1/2 rounded-full bg-gold-400/10 blur-[80px]" />
+          
+          <div className="page-container relative z-10 flex flex-col items-center text-center lg:items-start lg:text-left">
+            <p className="text-salmon-500 text-xs font-bold tracking-[0.42em] uppercase">
               Marketplace
             </p>
-            <h1 className="text-primary mt-3 text-4xl font-semibold tracking-tight text-balance md:text-5xl">
-              Find Your Perfect Beauty Artist
+            <h1 className="text-plum-900 mt-4 text-4xl font-bold tracking-tight text-balance md:text-5xl lg:text-6xl">
+              Find Your Perfect <br className="hidden lg:block" />
+              <span className="bg-gradient-to-r from-salmon-500 to-accent bg-clip-text text-transparent">Beauty Artist</span>
             </h1>
-            <p className="text-muted-foreground mt-4 max-w-xl text-base leading-7">
+            <p className="text-plum-700/80 mt-6 max-w-xl text-lg leading-relaxed">
               Browse {500}+ verified freelance makeup artists, hairstylists,
               nail artists, and skincare specialists in your city.
             </p>

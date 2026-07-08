@@ -45,11 +45,11 @@ export function MarketplaceListing() {
   return (
     <>
       {/* Filters bar */}
-      <div className="sticky top-20 z-30 -mx-4 border-b border-border bg-background/95 px-4 py-4 backdrop-blur-xl sm:-mx-0 sm:px-0">
+      <div className="sticky top-20 z-30 -mx-4 border-b border-beige-300/50 bg-white/70 px-4 py-4 backdrop-blur-2xl shadow-sm sm:-mx-0 sm:px-0 transition-all duration-300">
         <ArtistFilters />
-        <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
-          <p className="text-muted-foreground text-sm">
-            <span className="text-primary font-semibold">{total}</span>{" "}
+        <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
+          <p className="text-plum-700/80 text-sm font-medium">
+            <span className="text-plum-900 font-bold">{total}</span>{" "}
             {total === 1 ? "artist" : "artists"} found
           </p>
           <div className="flex flex-wrap items-center gap-3">
