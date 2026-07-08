@@ -24,8 +24,13 @@ const providers: Provider[] = [
       }
 
       try {
-        const user = await db.user.findUnique({
-          where: { email: parsedCredentials.data.email },
+        const user = await db.user.findFirst({
+          where: {
+            email: {
+              equals: parsedCredentials.data.email,
+              mode: "insensitive",
+            },
+          },
           select: {
             email: true,
             id: true,

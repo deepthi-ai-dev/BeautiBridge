@@ -50,8 +50,13 @@ export async function registerUserAction(
   let existingUser: { id: string } | null = null;
 
   try {
-    existingUser = await db.user.findUnique({
-      where: { email: parsedInput.data.email },
+    existingUser = await db.user.findFirst({
+      where: {
+        email: {
+          equals: parsedInput.data.email,
+          mode: "insensitive",
+        },
+      },
       select: { id: true },
     });
   } catch (error) {
