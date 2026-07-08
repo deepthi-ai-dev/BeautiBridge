@@ -16,7 +16,7 @@ npm install
 copy .env.example .env
 ```
 
-3. Initialize the local SQLite database and Prisma client:
+3. Initialize the database and Prisma client:
 
 ```bash
 npm run db:init
@@ -32,7 +32,7 @@ npm run dev
 
 | Variable | Required | Purpose |
 | --- | --- | --- |
-| `DATABASE_URL` | Yes | SQLite database connection string |
+| `DATABASE_URL` | Yes | PostgreSQL database connection string |
 | `NEXT_PUBLIC_APP_URL` | Yes | Public app URL used for callbacks |
 | `AUTH_SECRET` | Yes | Auth.js secret for signing/encrypting auth tokens |
 | `AUTH_GOOGLE_ID` | Optional | Google OAuth client ID |

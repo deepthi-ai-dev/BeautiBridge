@@ -20,10 +20,11 @@ export async function getAuthReadiness(): Promise<AuthReadiness> {
       error.code === "P2021"
     ) {
       databaseMessage =
-        "Local database is not initialized yet. Run `npm run db:init` and refresh this page.";
+        "The database is not initialized. Please run `npx prisma db push` to create the required tables.";
     } else {
+      console.error("[Auth Readiness] Database connection failed:", error);
       databaseMessage =
-        "Unable to connect to the local database. Check DATABASE_URL and run `npm run db:init`.";
+        "Unable to connect to the PostgreSQL database. Please verify your DATABASE_URL environment variable.";
     }
   }
 

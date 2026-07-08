@@ -2,7 +2,7 @@ import NextAuth from "next-auth";
 import Google from "next-auth/providers/google";
 import Credentials from "next-auth/providers/credentials";
 import type { Provider } from "next-auth/providers";
-import { Prisma } from "@prisma/client";
+import { Prisma, UserRole } from "@prisma/client";
 import { compare } from "bcryptjs";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { db } from "@/server/db";
@@ -113,7 +113,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     async session({ session, token }) {
       if (session.user) {
         session.user.id = token.sub ?? "";
-        session.user.role = (token as any).role ?? null;
+        session.user.role = (token.role as UserRole) ?? null;
       }
 
       return session;

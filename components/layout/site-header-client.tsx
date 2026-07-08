@@ -17,16 +17,15 @@ const guestNavItems = [
 const customerNavItems = [
   { href: "/artists", label: "Find Artists" },
   { href: "/assistant", label: "AI Assistant" },
-  { href: "/dashboard", label: "Customer Dashboard" },
+  { href: "/dashboard", label: "Dashboard" },
 ] as const;
 
 const artistNavItems = [
-  { href: "/artist-dashboard", label: "Artist Dashboard" },
-  { href: "/artist-dashboard/requests", label: "Booking Requests" },
+  { href: "/artist-dashboard", label: "Dashboard" },
+  { href: "/artist-dashboard/requests", label: "Requests" },
   { href: "/artist-dashboard/calendar", label: "Calendar" },
   { href: "/artist-dashboard/portfolio", label: "Portfolio" },
   { href: "/artist-dashboard/services", label: "Services" },
-  { href: "/artist-dashboard/availability", label: "Availability" },
   { href: "/assistant", label: "AI Assistant" },
 ] as const;
 
@@ -36,17 +35,20 @@ function NavLinks({ items }: { items: readonly NavItem[] }) {
   const pathname = usePathname();
 
   return (
-    <nav className="hidden items-center gap-8 text-sm font-medium md:flex">
+    <nav className="hidden items-center gap-1.5 md:flex bg-card/40 p-1.5 rounded-full border border-border/40 backdrop-blur-md">
       {items.map((item) => {
         const isActive =
-          item.href === "/" ? pathname === "/" : pathname.startsWith(item.href.split("#")[0] || "/") && item.href !== "/";
+          item.href === "/"
+            ? pathname === "/"
+            : pathname.startsWith(item.href.split("#")[0] || "/") &&
+              item.href !== "/";
         return (
           <Link
             className={cn(
-              "nav-link relative py-1 transition-colors duration-200",
+              "nav-link relative px-4 py-1.5 text-sm font-medium transition-all duration-300 rounded-full",
               isActive
-                ? "text-primary font-semibold"
-                : "text-foreground/70 hover:text-primary",
+                ? "text-primary bg-background shadow-sm"
+                : "text-foreground/70 hover:text-primary hover:bg-muted/50",
             )}
             href={item.href as Route}
             key={item.href}
@@ -84,66 +86,62 @@ export function SiteHeaderClient({
       : customerNavItems;
 
   return (
-    <header
-      className={cn(
-        "border-border/60 bg-background/92 sticky top-0 z-40 border-b backdrop-blur-2xl",
-        "transition-shadow duration-300",
-        className,
-      )}
-    >
-      <div className="page-container flex h-[4.5rem] items-center justify-between gap-6">
-        {/* Logo */}
-        <Link
-          className="group flex items-center gap-2.5 text-base font-bold tracking-tight"
-          href="/"
-        >
-          <span className="flex size-7 items-center justify-center rounded-lg bg-gradient-to-br from-salmon-300 to-primary text-[11px] font-black text-white shadow-soft transition-transform duration-200 group-hover:scale-105">
-            B
-          </span>
-          <span className="text-primary">BeautiBridge</span>
-        </Link>
+    <div className="sticky top-0 z-50 flex justify-center px-4 pt-4 sm:px-6 pb-4 w-full bg-background/80 backdrop-blur-3xl border-b border-border/40">
+      <header
+        className={cn(
+          "w-full max-w-6xl rounded-full border border-border/60 bg-card/70 shadow-[0_8px_32px_rgba(0,0,0,0.08)]",
+          "transition-all duration-500",
+          className,
+        )}
+      >
+        <div className="flex h-16 items-center justify-between px-4 sm:px-6">
+          {/* Logo */}
+          <Link
+            className="group flex items-center gap-2.5 text-base font-bold tracking-tight"
+            href="/"
+          >
+            <span className="flex size-8 items-center justify-center rounded-full bg-gradient-to-br from-salmon-300 to-primary text-xs font-black text-white shadow-soft transition-transform duration-300 group-hover:scale-105 group-hover:rotate-3">
+              B
+            </span>
+            <span className="text-primary text-lg">BeautiBridge</span>
+          </Link>
 
-        {/* Desktop Nav */}
-        <NavLinks items={navItems} />
+          {/* Desktop Nav */}
+          <NavLinks items={navItems} />
 
-        {/* Right actions */}
-        <div className="hidden items-center gap-2.5 md:flex">
-          {!isLoggedIn ? (
-            <>
-              <Link
-                className="text-foreground/75 hover:text-primary rounded-full px-4 py-2 text-sm font-semibold transition-colors"
-                href="/login"
-              >
-                Login
-              </Link>
-              <Link
-                className="text-foreground/75 hover:text-primary rounded-full px-4 py-2 text-sm font-semibold transition-colors"
-                href="/register"
-              >
-                Sign Up
-              </Link>
-              <Link href="/artists">
-                <Button
-                  variant="primary"
-                  size="md"
-                  className="shadow-soft hover:shadow-card"
+          {/* Right actions */}
+          <div className="hidden items-center gap-2 md:flex">
+            {!isLoggedIn ? (
+              <>
+                <Link
+                  className="text-foreground/75 hover:text-primary rounded-full px-4 py-2 text-sm font-semibold transition-colors"
+                  href="/login"
                 >
-                  Find Artists
-                </Button>
-              </Link>
-            </>
-          ) : (
-            <UserNav user={user!} />
-          )}
-        </div>
+                  Log in
+                </Link>
+                <Link href="/artists">
+                  <Button
+                    variant="primary"
+                    size="md"
+                    className="shadow-soft hover:shadow-card hover:-translate-y-0.5 transition-all duration-300 rounded-full px-6"
+                  >
+                    Find Artists
+                  </Button>
+                </Link>
+              </>
+            ) : (
+              <UserNav user={user!} />
+            )}
+          </div>
 
-        {/* Mobile nav toggle */}
-        <MobileNav
-          items={navItems}
-          isLoggedIn={isLoggedIn}
-          user={user ?? undefined}
-        />
-      </div>
-    </header>
+          {/* Mobile nav toggle */}
+          <MobileNav
+            items={navItems}
+            isLoggedIn={isLoggedIn}
+            user={user ?? undefined}
+          />
+        </div>
+      </header>
+    </div>
   );
 }

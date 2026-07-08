@@ -23,7 +23,7 @@ export type AuthActionResult = {
 function getDatabaseErrorResult(): AuthActionResult {
   return {
     message:
-      "Local database is not initialized yet. Run `npm run db:init` and try again.",
+      "The database is not initialized. Please ensure the database schema is pushed.",
     status: "error",
   };
 }
@@ -132,7 +132,7 @@ export async function selectUserRoleAction(input: unknown) {
     ) {
       return {
         message:
-          "Local database is not initialized yet. Run `npm run db:init`, then sign in again.",
+          "The database is not initialized. Please ensure the database schema is pushed, then sign in again.",
         status: "error" as const,
       };
     }

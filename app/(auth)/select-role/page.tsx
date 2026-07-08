@@ -44,8 +44,7 @@ export default async function SelectRolePage({
           title="Database not initialized"
         >
           <p className="text-muted-foreground text-sm">
-            Run <code className="bg-muted rounded px-1 py-0.5">npm run db:init</code>{" "}
-            in this project, then refresh the page.
+            Please ensure the database is initialized and refresh the page.
           </p>
         </AuthCard>
       );
