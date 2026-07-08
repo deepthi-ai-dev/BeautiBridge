@@ -72,6 +72,8 @@ export function RegisterForm({
     resolver: zodResolver(registerSchema),
   });
 
+  const selectedRole = watch("role");
+
   const onSubmit = (values: RegisterFormValues) => {
     setErrorMessage(null);
 

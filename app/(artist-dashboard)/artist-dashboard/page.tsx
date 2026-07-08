@@ -16,5 +16,7 @@ export default async function ArtistDashboardPage() {
     where: { id: session.user.id },
   });
 
+  if (!user) redirect("/login");
+
   return <DashboardHome user={user} />;
 }

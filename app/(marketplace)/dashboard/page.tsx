@@ -15,6 +15,8 @@ export default async function DashboardPage() {
   const user = await db.user.findUnique({
     where: { id: session.user.id },
   });
+
+  if (!user) redirect("/login");
   
   return <DashboardHome user={user} />;
 }

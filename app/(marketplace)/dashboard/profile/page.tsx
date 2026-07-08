@@ -16,5 +16,7 @@ export default async function ProfilePage() {
     where: { id: session.user.id },
   });
 
+  if (!user) redirect("/login");
+
   return <ProfileForm user={user} />;
 }

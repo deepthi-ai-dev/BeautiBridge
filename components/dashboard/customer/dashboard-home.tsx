@@ -27,6 +27,8 @@ interface DashboardHomeProps {
     image?: string | null;
     phone?: string | null;
     city?: string | null;
+    dob?: string | null;
+    address?: string | null;
   };
 }
 
