@@ -3,9 +3,18 @@
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import type { Route } from "next";
-import { User, Calendar, Bot, Settings, LogOut, LayoutDashboard } from "lucide-react";
+import {
+  User,
+  Calendar,
+  Bot,
+  Settings,
+  LogOut,
+  LayoutDashboard,
+  ChevronDown,
+} from "lucide-react";
 import { signOut } from "next-auth/react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { cn } from "@/lib/utils";
 
 type UserNavProps = {
   user: {
@@ -19,14 +28,17 @@ type UserNavProps = {
 export function UserNav({ user }: UserNavProps) {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  
+
   const firstName = user.name?.split(" ")[0] || "User";
   const initials = user.name?.slice(0, 2).toUpperCase() || "U";
   const isArtist = user.role === "ARTIST";
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
         setIsOpen(false);
       }
     }
@@ -34,84 +46,104 @@ export function UserNav({ user }: UserNavProps) {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  const menuItems = [
+    {
+      href: (isArtist ? "/artist-dashboard" : "/dashboard") as Route,
+      icon: LayoutDashboard,
+      label: "Dashboard",
+    },
+    {
+      href: (isArtist ? "/artist-dashboard/profile" : "/dashboard/profile") as Route,
+      icon: User,
+      label: "My Profile",
+    },
+    {
+      href: (isArtist ? "/artist-dashboard/requests" : "/dashboard/bookings") as Route,
+      icon: Calendar,
+      label: isArtist ? "Booking Requests" : "My Bookings",
+    },
+    {
+      href: "/assistant" as Route,
+      icon: Bot,
+      label: "AI Assistant",
+    },
+    {
+      href: (isArtist ? "/artist-dashboard/settings" : "/dashboard/settings") as Route,
+      icon: Settings,
+      label: "Settings",
+    },
+  ] as const;
+
   return (
     <div className="relative" ref={dropdownRef}>
-      <button 
+      <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-3 rounded-full border border-border bg-card p-1 pr-4 shadow-sm hover:bg-muted transition-colors cursor-pointer"
+        aria-expanded={isOpen}
+        aria-label="User menu"
+        className={cn(
+          "flex items-center gap-2.5 rounded-xl border bg-card px-3 py-1.5 shadow-sm transition-all duration-150",
+          isOpen
+            ? "border-primary/30 bg-muted"
+            : "border-border/80 hover:bg-muted hover:border-border",
+        )}
       >
-        <Avatar className="size-8">
+        <Avatar className="size-7">
           {user.image ? (
             /* eslint-disable-next-line @next/next/no-img-element */
-            <img src={user.image} alt={user.name || "User"} className="aspect-square h-full w-full object-cover" />
+            <img
+              src={user.image}
+              alt={user.name || "User"}
+              className="aspect-square h-full w-full object-cover"
+            />
           ) : (
-            <AvatarFallback className="bg-primary/10 text-primary text-xs">{initials}</AvatarFallback>
+            <AvatarFallback className="bg-primary/10 text-primary text-xs font-bold">
+              {initials}
+            </AvatarFallback>
           )}
         </Avatar>
-        <span className="text-sm font-semibold text-foreground">
-          Welcome, {firstName}
+        <span className="text-sm font-semibold text-foreground max-w-24 truncate">
+          {firstName}
         </span>
+        <ChevronDown
+          className={cn(
+            "size-3.5 text-muted-foreground transition-transform duration-200",
+            isOpen && "rotate-180",
+          )}
+        />
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 top-full mt-2 w-56 rounded-xl border border-border bg-card p-2 shadow-premium z-50">
-          <div className="px-3 py-2 border-b border-border mb-2">
-            <p className="text-sm font-semibold truncate">{user.name}</p>
-            <p className="text-xs text-muted-foreground truncate">{user.email}</p>
+        <div className="dropdown-enter absolute right-0 top-full mt-2 w-56 rounded-xl border border-border/80 bg-card p-2 shadow-premium z-50">
+          {/* User info header */}
+          <div className="px-3 py-2.5 border-b border-border/60 mb-1.5">
+            <p className="text-sm font-bold text-foreground truncate">{user.name}</p>
+            <p className="text-[11px] text-muted-foreground truncate mt-0.5">{user.email}</p>
           </div>
-          
-          <nav className="flex flex-col gap-1 text-sm font-medium">
-            <Link 
-              href={(isArtist ? "/artist-dashboard" : "/dashboard") as Route} 
-              className="flex items-center gap-2 rounded-md px-3 py-2 hover:bg-muted"
-              onClick={() => setIsOpen(false)}
-            >
-              <LayoutDashboard className="size-4" />
-              Dashboard
-            </Link>
-            <Link 
-              href={(isArtist ? "/artist-dashboard/profile" : "/dashboard/profile") as Route} 
-              className="flex items-center gap-2 rounded-md px-3 py-2 hover:bg-muted"
-              onClick={() => setIsOpen(false)}
-            >
-              <User className="size-4" />
-              My Profile
-            </Link>
-            <Link 
-              href={(isArtist ? "/artist-dashboard/requests" : "/dashboard/bookings") as Route} 
-              className="flex items-center gap-2 rounded-md px-3 py-2 hover:bg-muted"
-              onClick={() => setIsOpen(false)}
-            >
-              <Calendar className="size-4" />
-              {isArtist ? "Booking Requests" : "My Bookings"}
-            </Link>
-            <Link 
-              href="/assistant" 
-              className="flex items-center gap-2 rounded-md px-3 py-2 hover:bg-muted"
-              onClick={() => setIsOpen(false)}
-            >
-              <Bot className="size-4" />
-              AI Assistant
-            </Link>
-            <Link 
-              href={(isArtist ? "/artist-dashboard/settings" : "/dashboard/settings") as Route} 
-              className="flex items-center gap-2 rounded-md px-3 py-2 hover:bg-muted"
-              onClick={() => setIsOpen(false)}
-            >
-              <Settings className="size-4" />
-              Settings
-            </Link>
-            
-            <div className="h-px bg-border my-1" />
-            
-            <button 
-              className="flex items-center gap-2 rounded-md px-3 py-2 hover:bg-muted text-destructive w-full text-left cursor-pointer"
+
+          {/* Nav items */}
+          <nav className="flex flex-col gap-0.5 text-sm">
+            {menuItems.map(({ href, icon: Icon, label }) => (
+              <Link
+                key={label}
+                href={href}
+                className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-foreground/75 hover:bg-muted hover:text-foreground transition-colors duration-150"
+                onClick={() => setIsOpen(false)}
+              >
+                <Icon className="size-3.5 text-muted-foreground" />
+                {label}
+              </Link>
+            ))}
+
+            <div className="h-px bg-border/60 my-1" />
+
+            <button
+              className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-destructive hover:bg-destructive/8 transition-colors duration-150 w-full text-left"
               onClick={() => {
                 setIsOpen(false);
-                signOut({ callbackUrl: '/' });
+                signOut({ callbackUrl: "/" });
               }}
             >
-              <LogOut className="size-4" />
+              <LogOut className="size-3.5" />
               Sign Out
             </button>
           </nav>

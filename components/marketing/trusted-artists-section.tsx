@@ -1,105 +1,115 @@
+import Link from "next/link";
 import Image from "next/image";
-import { MapPin, Star } from "lucide-react";
+import { ArrowRight, ShieldCheck } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { FadeUp } from "@/lib/motion";
+import { FadeUp, StaggerContainer } from "@/lib/motion";
+import { queryArtists } from "@/features/artists/queries";
+import type { Artist } from "@/features/artists/types";
+import { rupeeFormatter } from "@/lib/formatters";
 
-const artists = [
-  {
-    badge: "Top rated",
-    city: "Visakhapatnam",
-    image: "/images/marketing/bridal-look.svg",
-    name: "Ananya R.",
-    price: "From INR 2,800",
-    service: "Bridal Makeup",
-  },
-  {
-    badge: "Rising star",
-    city: "Coimbatore",
-    image: "/images/marketing/hair-style.svg",
-    name: "Priya M.",
-    price: "From INR 1,500",
-    service: "Hair Styling",
-  },
-  {
-    badge: "Highly booked",
-    city: "Nagpur",
-    image: "/images/marketing/nail-art.svg",
-    name: "Nisha K.",
-    price: "From INR 900",
-    service: "Nail Artist",
-  },
-] as const;
+const badgeVariant = {
+  "Top Rated": "gold",
+  "Rising Star": "teal",
+  "Highly Booked": "salmon",
+} as const;
 
 export function TrustedArtistsSection() {
+  const { artists } = queryArtists({
+    query: "",
+    category: "all",
+    city: "",
+    sortBy: "rating",
+    page: 1,
+  });
+  const featured = artists.slice(0, 6);
+
   return (
-    <section className="section-y bg-beige-200" id="featured-artists">
+    <section className="section-y bg-beige-200">
       <div className="page-container">
-        <div className="grid items-end gap-8 md:grid-cols-[1fr_auto]">
-          <FadeUp>
-            <p className="text-secondary text-xs font-semibold tracking-[0.42em] uppercase">
-              Loved & trusted
-            </p>
-            <h2 className="text-primary mt-5 text-4xl font-semibold">
-              Real artists. Real work. Real reviews.
-            </h2>
-          </FadeUp>
-          <dl className="grid grid-cols-3 gap-8 text-center">
-            {[
-              ["500+", "Verified artists"],
-              ["50+", "Cities served"],
-              ["4.9", "Average rating"],
-            ].map(([value, label]) => (
-              <div key={label}>
-                <dt className="text-muted-foreground text-sm">{label}</dt>
-                <dd className="text-primary font-semibold">{value}</dd>
-              </div>
-            ))}
-          </dl>
-        </div>
-        <div className="mt-14 grid gap-6 md:grid-cols-3">
-          {artists.map((artist) => (
-            <FadeUp key={artist.name}>
-              <Card className="overflow-hidden rounded-[1.75rem]">
-                <div className="relative">
-                  <Image
-                    alt={`${artist.name} ${artist.service}`}
-                    className="aspect-[4/3] w-full object-cover"
-                    height={980}
-                    src={artist.image}
-                    width={760}
-                  />
-                  <span className="bg-primary text-primary-foreground absolute top-4 left-4 rounded-full px-4 py-1.5 text-sm font-semibold">
-                    {artist.badge}
-                  </span>
-                </div>
-                <div className="p-6">
-                  <div className="text-accent flex items-center gap-1">
-                    {Array.from({ length: 5 }).map((_, index) => (
-                      <Star className="size-4 fill-current" key={index} />
-                    ))}
+        <FadeUp className="text-center mb-14">
+          <p className="section-label">Our artists</p>
+          <h2 className="text-primary mt-4 text-4xl font-semibold tracking-tight">
+            Meet trusted local experts
+          </h2>
+          <p className="text-muted-foreground mt-4 max-w-xl mx-auto text-base leading-relaxed">
+            Every BeautiBridge artist is individually verified for portfolio
+            quality, professional experience, and client ratings.
+          </p>
+        </FadeUp>
+
+        <StaggerContainer className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {featured.map((artist: Artist) => (
+            <FadeUp key={artist.id}>
+              <Link
+                href={`/artists/${artist.slug}`}
+                className="group block"
+              >
+                <div className="premium-card overflow-hidden">
+                  {/* Cover image */}
+                  <div className="relative aspect-[4/3] overflow-hidden">
+                    <Image
+                      alt={artist.name}
+                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.06]"
+                      fill
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                      src={artist.coverImage}
+                    />
+                    <div className="card-image-overlay absolute inset-0" />
+                    {artist.badge && (
+                      <Badge
+                        className="absolute top-3 left-3"
+                        variant={
+                          badgeVariant[
+                            artist.badge as keyof typeof badgeVariant
+                          ] ?? "salmon"
+                        }
+                      >
+                        {artist.badge}
+                      </Badge>
+                    )}
                   </div>
-                  <h3 className="text-primary mt-4 text-xl font-semibold">
-                    {artist.name}
-                  </h3>
-                  <p className="text-muted-foreground mt-1 text-sm">
-                    {artist.service}
-                  </p>
-                  <div className="mt-5 flex items-center justify-between gap-4">
-                    <p className="text-muted-foreground flex items-center gap-2 text-sm">
-                      <MapPin className="size-4" />
-                      {artist.city}
+
+                  {/* Info */}
+                  <div className="p-4">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="min-w-0">
+                        <p className="font-bold text-foreground truncate flex items-center gap-1.5 text-sm">
+                          {artist.name}
+                          {artist.isVerified && (
+                            <ShieldCheck className="text-teal-400 size-3.5 shrink-0" />
+                          )}
+                        </p>
+                        <p className="text-xs text-muted-foreground mt-0.5 capitalize">
+                          {artist.category} · {artist.city}
+                        </p>
+                      </div>
+                      <div className="text-right shrink-0">
+                        <p className="text-xs font-bold text-gold-400">
+                          ★ {artist.rating}
+                        </p>
+                        <p className="text-[10px] text-muted-foreground">
+                          {artist.reviewCount.toLocaleString("en-IN")} reviews
+                        </p>
+                      </div>
+                    </div>
+                    <p className="text-xs font-semibold text-primary mt-3">
+                      From {rupeeFormatter.format(artist.startingPrice)}
                     </p>
-                    <p className="text-primary font-semibold">{artist.price}</p>
                   </div>
-                  <Button className="mt-6 w-full" variant="salmon">
-                    Book
-                  </Button>
                 </div>
-              </Card>
+              </Link>
             </FadeUp>
           ))}
-        </div>
+        </StaggerContainer>
+
+        <FadeUp className="mt-12 text-center">
+          <Link href="/artists">
+            <Button variant="outline" className="rounded-full px-8 gap-2">
+              View all artists <ArrowRight className="size-4" />
+            </Button>
+          </Link>
+        </FadeUp>
       </div>
     </section>
   );

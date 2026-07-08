@@ -8,9 +8,9 @@ import { useBookingStore } from "@/stores/booking-store";
 import { rupeeFormatter } from "@/lib/formatters";
 
 export function MyBookingsList() {
-  const { mockBookings, cancelMockBooking } = useBookingStore();
+  const { bookings, cancelBooking } = useBookingStore();
 
-  if (mockBookings.length === 0) {
+  if (bookings.length === 0) {
     return (
       <div className="premium-card flex flex-col items-center justify-center p-12 text-center min-h-[400px]">
         <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-muted">
@@ -33,7 +33,7 @@ export function MyBookingsList() {
 
   return (
     <div className="grid gap-6">
-      {mockBookings.map((booking) => {
+      {bookings.map((booking) => {
         const displayDate = new Date(booking.date).toLocaleDateString("en-US", { 
           weekday: 'long', 
           year: 'numeric', 
@@ -107,7 +107,7 @@ export function MyBookingsList() {
                     variant="outline" 
                     size="sm" 
                     className="text-xs"
-                    onClick={() => cancelMockBooking(booking.id)}
+                    onClick={() => cancelBooking(booking.id)}
                   >
                     <XCircle className="size-3.5 mr-1.5" />
                     Cancel

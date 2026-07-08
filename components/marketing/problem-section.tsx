@@ -29,28 +29,31 @@ export function ProblemSection() {
             src="/images/marketing/problem-phone.svg"
             width={900}
           />
-          <div className="bg-card/95 text-primary shadow-soft absolute right-8 bottom-8 max-w-60 rounded-2xl p-4 text-sm">
+          {/* Quote callout */}
+          <div className="bg-card/96 text-primary shadow-premium absolute right-6 bottom-6 max-w-[13rem] rounded-2xl border border-border/60 p-4 text-sm font-medium leading-5 backdrop-blur-sm">
             &ldquo;I booked blind and paid double, never again.&rdquo;
           </div>
         </FadeUp>
+
         <FadeUp>
-          <p className="text-secondary text-xs font-semibold tracking-[0.42em] uppercase">
-            The everyday struggle
-          </p>
-          <h2 className="text-primary mt-5 max-w-2xl text-4xl leading-tight font-semibold text-balance">
+          <p className="section-label">The everyday struggle</p>
+          <h2 className="text-primary mt-4 max-w-2xl text-4xl leading-tight font-semibold text-balance">
             Finding a trusted artist shouldn&apos;t feel like a gamble.
           </h2>
-          <p className="text-muted-foreground mt-6 max-w-2xl text-lg leading-8">
+          <p className="text-muted-foreground mt-5 max-w-2xl text-base leading-8">
             In most Tier 2 and Tier 3 cities, women rely on scattered WhatsApp
             forwards, guesswork, and word of mouth to find a good makeup artist
-            or stylist, often with no idea about quality, pricing, or
+            or stylist — often with no idea about quality, pricing, or
             reliability until it&apos;s too late.
           </p>
-          <div className="mt-10 grid gap-6">
+
+          <div className="mt-10 grid gap-5">
             {points.map((point) => (
-              <div className="flex gap-4" key={point.text}>
-                <point.icon className="text-secondary mt-1 size-5 shrink-0" />
-                <p className="text-primary/85 leading-7">{point.text}</p>
+              <div className="flex gap-4 items-start" key={point.text}>
+                <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-secondary/15 mt-0.5">
+                  <point.icon className="text-secondary size-4" />
+                </div>
+                <p className="text-foreground/80 leading-7 text-sm">{point.text}</p>
               </div>
             ))}
           </div>

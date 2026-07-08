@@ -4,15 +4,16 @@ import { Calendar, CheckCircle, Heart, Bot, ArrowRight, Sparkles } from "lucide-
 import Link from "next/link";
 import type { Route } from "next";
 import { StatCard } from "@/components/dashboard/stat-card";
-import { AvatarInitials, StatusBadge } from "@/components/dashboard/ui-helpers";
+import { StatusBadge } from "@/components/dashboard/ui-helpers";
+import Image from "next/image";
 import {
-  MOCK_UPCOMING_BOOKINGS,
   MOCK_ACTIVITIES,
   MOCK_FAVORITE_ARTISTS,
   MOCK_AI_HISTORY,
-  MOCK_BOOKING_HISTORY,
 } from "@/lib/mock-data";
 import { FadeUp, StaggerContainer } from "@/lib/motion";
+import { useBookingStore } from "@/stores/booking-store";
+import { rupeeFormatter } from "@/lib/formatters";
 
 interface DashboardHomeProps {
   user?: {
@@ -24,11 +25,27 @@ interface DashboardHomeProps {
 
 export function DashboardHome({ user }: DashboardHomeProps) {
   const name = user?.name?.split(" ")[0] || "Beautiful Guest";
-  const todayStr = "Thursday, 7 August 2025";
+  const todayStr = new Date().toLocaleDateString("en-US", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
 
-  const upcomingBooking = MOCK_UPCOMING_BOOKINGS.find(
-    (b) => b.status === "confirmed" || b.status === "pending"
-  );
+  const { bookings } = useBookingStore();
+
+  const upcomingBookings = bookings.filter((b) => b.status === "Upcoming");
+  const completedBookings = bookings.filter((b) => b.status === "Completed");
+  const nextBooking = upcomingBookings[0] ?? null;
+
+  const displayDate = nextBooking
+    ? new Date(nextBooking.date).toLocaleDateString("en-US", {
+        weekday: "long",
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+      })
+    : null;
 
   return (
     <StaggerContainer className="space-y-6">
@@ -55,14 +72,14 @@ export function DashboardHome({ user }: DashboardHomeProps) {
         <StatCard
           icon={Calendar}
           label="Upcoming Bookings"
-          value={MOCK_UPCOMING_BOOKINGS.length}
+          value={upcomingBookings.length}
           iconColor="text-primary"
           iconBg="bg-primary/10"
         />
         <StatCard
           icon={CheckCircle}
           label="Completed Bookings"
-          value={MOCK_BOOKING_HISTORY.filter((b) => b.status === "completed").length}
+          value={completedBookings.length}
           iconColor="text-teal-400"
           iconBg="bg-teal-400/10"
         />
@@ -95,46 +112,50 @@ export function DashboardHome({ user }: DashboardHomeProps) {
             </Link>
           </div>
 
-          {upcomingBooking ? (
+          {nextBooking ? (
             <div className="space-y-4">
               <div className="flex items-start gap-4">
-                <AvatarInitials
-                  initials={upcomingBooking.artistInitials}
-                  gradient={upcomingBooking.artistColor}
-                />
+                <div className="relative size-12 shrink-0 overflow-hidden rounded-full border-2 border-primary/20">
+                  <Image
+                    src={nextBooking.artistAvatar}
+                    alt={nextBooking.artistName}
+                    fill
+                    sizes="48px"
+                    className="object-cover"
+                  />
+                </div>
                 <div className="min-w-0 flex-1">
                   <h4 className="font-semibold text-foreground truncate">
-                    {upcomingBooking.artistName}
+                    {nextBooking.artistName}
                   </h4>
                   <p className="text-xs text-muted-foreground">
-                    {upcomingBooking.artistSpecialty}
+                    {nextBooking.serviceName}
                   </p>
                   <div className="mt-2 flex flex-wrap gap-2">
                     <span className="rounded-lg bg-muted px-2.5 py-1 text-xs text-foreground font-medium">
-                      {upcomingBooking.service}
+                      {nextBooking.serviceName}
                     </span>
-                    <StatusBadge status={upcomingBooking.status} />
+                    <StatusBadge status="confirmed" />
                   </div>
                 </div>
                 <div className="text-right">
                   <p className="text-sm font-bold text-foreground">
-                    ₹{upcomingBooking.price.toLocaleString("en-IN")}
+                    {rupeeFormatter.format(nextBooking.price)}
                   </p>
                 </div>
               </div>
 
               <div className="rounded-xl bg-muted/50 p-4 grid gap-3 sm:grid-cols-2 text-xs">
                 <div>
-                  <span className="text-muted-foreground block">Date & Time</span>
+                  <span className="text-muted-foreground block">Date &amp; Time</span>
                   <span className="font-semibold text-foreground">
-                    15 Aug 2025{" "}
-                    at {upcomingBooking.time}
+                    {displayDate} at {nextBooking.timeSlot}
                   </span>
                 </div>
                 <div>
-                  <span className="text-muted-foreground block">Location</span>
-                  <span className="font-semibold text-foreground truncate block">
-                    {upcomingBooking.location}
+                  <span className="text-muted-foreground block">Booking ID</span>
+                  <span className="font-semibold text-foreground uppercase">
+                    #{nextBooking.id}
                   </span>
                 </div>
               </div>
@@ -197,27 +218,53 @@ export function DashboardHome({ user }: DashboardHomeProps) {
             <h3 className="font-semibold text-foreground border-b border-border pb-3">
               Recent Activity
             </h3>
-            <ul className="space-y-3" role="list">
-              {MOCK_ACTIVITIES.slice(0, 3).map((act) => (
-                <li key={act.id} className="flex gap-2.5 text-xs">
-                  <span className="mt-0.5 text-base">
-                    {act.type === "booking"
-                      ? "📅"
-                      : act.type === "review"
-                      ? "⭐"
-                      : act.type === "favorite"
-                      ? "💖"
-                      : "🤖"}
-                  </span>
-                  <div className="min-w-0 flex-1">
-                    <p className="text-foreground/90 font-medium leading-relaxed">
-                      {act.description}
-                    </p>
-                    <span className="text-[10px] text-muted-foreground">{act.time}</span>
-                  </div>
-                </li>
-              ))}
-            </ul>
+            {bookings.length > 0 ? (
+              <ul className="space-y-3" role="list">
+                {bookings
+                  .slice()
+                  .reverse()
+                  .slice(0, 3)
+                  .map((b) => (
+                    <li key={b.id} className="flex gap-2.5 text-xs">
+                      <span className="mt-0.5 text-base">📅</span>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-foreground/90 font-medium leading-relaxed">
+                          Booked {b.artistName} for {b.serviceName}
+                        </p>
+                        <span className="text-[10px] text-muted-foreground">
+                          {new Date(b.date).toLocaleDateString("en-IN", {
+                            day: "numeric",
+                            month: "short",
+                            year: "numeric",
+                          })}
+                        </span>
+                      </div>
+                    </li>
+                  ))}
+              </ul>
+            ) : (
+              <ul className="space-y-3" role="list">
+                {MOCK_ACTIVITIES.slice(0, 3).map((act) => (
+                  <li key={act.id} className="flex gap-2.5 text-xs">
+                    <span className="mt-0.5 text-base">
+                      {act.type === "booking"
+                        ? "📅"
+                        : act.type === "review"
+                        ? "⭐"
+                        : act.type === "favorite"
+                        ? "💖"
+                        : "🤖"}
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-foreground/90 font-medium leading-relaxed">
+                        {act.description}
+                      </p>
+                      <span className="text-[10px] text-muted-foreground">{act.time}</span>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
           </FadeUp>
         </div>
       </div>

@@ -22,23 +22,32 @@ const badgeVariant = {
   "Highly Booked": "salmon",
 } as const;
 
+const availabilityConfig = {
+  available: { color: "bg-emerald-400", label: "Available" },
+  busy: { color: "bg-amber-400", label: "Busy" },
+  unavailable: { color: "bg-rose-400", label: "Unavailable" },
+} as const;
+
 export function ArtistCard({ artist, onPreview }: ArtistCardProps) {
+  const avail = availabilityConfig[artist.availability as keyof typeof availabilityConfig] ?? availabilityConfig.unavailable;
+
   return (
     <motion.article
-      className="premium-card group flex flex-col overflow-hidden transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[var(--shadow-premium)]"
+      className="premium-card group flex flex-col overflow-hidden cursor-pointer"
       variants={fadeUpVariants}
+      onClick={() => onPreview?.(artist)}
     >
       {/* Cover image */}
       <div className="relative aspect-[4/3] overflow-hidden">
         <Image
           alt={`${artist.name} – ${artist.services[0]}`}
-          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.06]"
           fill
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
           src={artist.coverImage}
         />
         {/* Gradient overlay */}
-        <div className="from-plum-950/60 absolute inset-0 bg-gradient-to-t via-transparent to-transparent" />
+        <div className="card-image-overlay absolute inset-0" />
 
         {/* Badge top-left */}
         {artist.badge && (
@@ -50,52 +59,50 @@ export function ArtistCard({ artist, onPreview }: ArtistCardProps) {
           </Badge>
         )}
 
-        {/* Availability dot */}
+        {/* Availability indicator */}
         <span
-          aria-label={`Availability: ${artist.availability}`}
+          aria-label={`Availability: ${avail.label}`}
+          title={avail.label}
           className={[
-            "absolute top-3 right-3 size-2.5 rounded-full ring-2 ring-white",
-            artist.availability === "available"
-              ? "bg-emerald-400"
-              : artist.availability === "busy"
-                ? "bg-amber-400"
-                : "bg-rose-400",
+            "absolute top-3 right-3 size-2.5 rounded-full ring-2 ring-white shadow-sm transition-transform duration-200",
+            avail.color,
           ].join(" ")}
         />
+
+        {/* Price overlay at bottom */}
+        <div className="absolute bottom-3 right-3 rounded-lg bg-black/50 px-2 py-1 backdrop-blur-sm">
+          <p className="text-xs font-bold text-white">
+            {rupeeFormatter.format(artist.startingPrice)}
+            <span className="font-normal opacity-80">/session</span>
+          </p>
+        </div>
       </div>
 
       {/* Body */}
-      <div className="flex flex-1 flex-col gap-3 p-5">
+      <div className="flex flex-1 flex-col gap-3 p-4">
         {/* Name & verified */}
         <div className="flex items-start justify-between gap-2">
-          <div>
-            <h3 className="text-primary flex items-center gap-1.5 text-base font-semibold leading-snug">
+          <div className="min-w-0">
+            <h3 className="text-primary flex items-center gap-1.5 text-sm font-semibold leading-snug truncate">
               {artist.name}
               {artist.isVerified && (
                 <ShieldCheck
                   aria-label="Verified artist"
-                  className="text-teal-400 size-4 shrink-0"
+                  className="text-teal-400 size-3.5 shrink-0"
                 />
               )}
             </h3>
-            <p className="text-muted-foreground mt-0.5 flex items-center gap-1 text-xs">
+            <p className="text-muted-foreground mt-0.5 flex items-center gap-1 text-xs truncate">
               <MapPin className="size-3 shrink-0" />
               {artist.city}, {artist.state}
             </p>
           </div>
-          <p className="text-primary shrink-0 text-sm font-semibold">
-            {rupeeFormatter.format(artist.startingPrice)}
-            <span className="text-muted-foreground text-[10px] font-normal">
-              {" "}
-              /session
-            </span>
-          </p>
         </div>
 
         {/* Stars & review count */}
         <div className="flex items-center gap-2">
           <RatingStars rating={artist.rating} showValue />
-          <span className="text-muted-foreground text-xs">
+          <span className="text-muted-foreground text-[11px]">
             ({artist.reviewCount.toLocaleString("en-IN")})
           </span>
         </div>
@@ -107,7 +114,7 @@ export function ArtistCard({ artist, onPreview }: ArtistCardProps) {
           ))}
           {artist.services.length > 3 && (
             <ServiceChip
-              className="text-primary/70 bg-muted border-transparent"
+              className="text-muted-foreground bg-muted border-transparent"
               label={`+${artist.services.length - 3} more`}
             />
           )}
@@ -116,7 +123,10 @@ export function ArtistCard({ artist, onPreview }: ArtistCardProps) {
         {/* CTA */}
         <Button
           className="mt-auto w-full"
-          onClick={() => onPreview?.(artist)}
+          onClick={(e) => {
+            e.stopPropagation();
+            onPreview?.(artist);
+          }}
           size="sm"
           variant="outline"
         >

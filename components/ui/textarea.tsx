@@ -8,7 +8,11 @@ export function Textarea({
   return (
     <textarea
       className={cn(
-        "border-input bg-card text-foreground placeholder:text-muted-foreground focus:border-ring focus:ring-ring/30 min-h-28 w-full rounded-lg border p-4 text-sm shadow-sm transition-colors outline-none focus:ring-2 disabled:cursor-not-allowed disabled:opacity-50",
+        "border-input bg-card text-foreground placeholder:text-muted-foreground",
+        "focus:border-ring focus:ring-ring/25 min-h-28 w-full rounded-xl border p-4 text-sm shadow-sm",
+        "transition-all duration-200 outline-none focus:ring-2 resize-none",
+        "hover:border-primary/30",
+        "disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-muted/50",
         className,
       )}
       {...props}

@@ -15,11 +15,11 @@ interface ChatMessageBubbleProps {
 
 function TypingDots() {
   return (
-    <span className="inline-flex items-end gap-1 h-4">
+    <span className="inline-flex items-center gap-1 h-5 px-1">
       {[0, 1, 2].map((i) => (
         <span
           key={i}
-          className="inline-block size-1.5 rounded-full bg-current opacity-60"
+          className="inline-block size-2 rounded-full bg-current opacity-60"
           style={{
             animation: `typing-dot 1.2s ease-in-out ${i * 0.2}s infinite`,
           }}
@@ -56,30 +56,30 @@ export function ChatMessageBubble({
   return (
     <div
       className={cn(
-        "group flex gap-3 px-4 py-2",
+        "group flex gap-3 px-4 py-3",
         isUser ? "flex-row-reverse" : "flex-row",
       )}
     >
       {/* Avatar */}
       <div
         className={cn(
-          "mt-1 flex size-8 shrink-0 items-center justify-center rounded-xl",
+          "mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-xl shadow-sm",
           isUser
             ? "bg-primary text-primary-foreground"
             : "bg-gradient-to-br from-salmon-300 to-primary text-white",
         )}
       >
         {isUser ? (
-          <User className="size-4" />
+          <User className="size-3.5" />
         ) : (
-          <Bot className="size-4" />
+          <Bot className="size-3.5" />
         )}
       </div>
 
       {/* Bubble */}
       <div
         className={cn(
-          "flex max-w-[80%] flex-col gap-1.5",
+          "flex max-w-[82%] flex-col gap-1.5",
           isUser ? "items-end" : "items-start",
         )}
       >
@@ -89,7 +89,7 @@ export function ChatMessageBubble({
             isUser
               ? "bg-primary text-primary-foreground rounded-tr-sm"
               : cn(
-                  "bg-card border border-border rounded-tl-sm",
+                  "bg-card border border-border/70 rounded-tl-sm",
                   message.isError && "border-destructive/40 bg-destructive/5",
                 ),
           )}
@@ -99,10 +99,10 @@ export function ChatMessageBubble({
           ) : isUser ? (
             <p className="whitespace-pre-wrap">{message.content}</p>
           ) : (
-            <div className="prose prose-sm max-w-none dark:prose-invert prose-p:my-1 prose-headings:mt-3 prose-headings:mb-1 prose-ul:my-1 prose-li:my-0.5 prose-code:bg-muted/50 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-code:text-xs prose-pre:bg-muted prose-pre:text-xs prose-pre:p-3 prose-pre:rounded-lg">
+            <div className="prose prose-sm max-w-none dark:prose-invert prose-p:my-1.5 prose-headings:mt-4 prose-headings:mb-2 prose-headings:font-semibold prose-ul:my-1.5 prose-li:my-1 prose-code:bg-muted/60 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-xs prose-pre:bg-muted prose-pre:text-xs prose-pre:p-4 prose-pre:rounded-xl">
               <ReactMarkdown>{message.content}</ReactMarkdown>
               {message.isStreaming && (
-                <span className="ml-1 inline-block h-4 w-0.5 animate-pulse bg-current align-middle opacity-70" />
+                <span className="ml-0.5 inline-block h-4 w-0.5 animate-pulse bg-current align-middle opacity-60" />
               )}
             </div>
           )}
@@ -111,23 +111,23 @@ export function ChatMessageBubble({
         {/* Timestamp + Actions */}
         <div
           className={cn(
-            "flex items-center gap-2",
+            "flex items-center gap-1.5",
             isUser ? "flex-row-reverse" : "flex-row",
           )}
         >
-          <span className="text-[10px] text-muted-foreground">
+          <span className="text-[10px] text-muted-foreground/70">
             {formatTime(message.timestamp)}
           </span>
 
           {!isUser && !message.isStreaming && message.content && (
-            <div className="flex items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100">
+            <div className="flex items-center gap-0.5 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
               <button
                 aria-label="Copy response"
-                className="flex items-center gap-1 rounded-md px-1.5 py-1 text-[10px] text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                className="flex items-center gap-1 rounded-md px-2 py-1 text-[10px] font-medium text-muted-foreground transition-all hover:bg-muted hover:text-foreground"
                 onClick={handleCopy}
               >
                 {copied ? (
-                  <Check className="size-3 text-green-500" />
+                  <Check className="size-3 text-emerald-500" />
                 ) : (
                   <Copy className="size-3" />
                 )}
@@ -136,11 +136,11 @@ export function ChatMessageBubble({
               {isLastAssistant && onRegenerate && !isLoading && (
                 <button
                   aria-label="Regenerate response"
-                  className="flex items-center gap-1 rounded-md px-1.5 py-1 text-[10px] text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                  className="flex items-center gap-1 rounded-md px-2 py-1 text-[10px] font-medium text-muted-foreground transition-all hover:bg-muted hover:text-foreground"
                   onClick={onRegenerate}
                 >
                   <RefreshCw className="size-3" />
-                  Regenerate
+                  Retry
                 </button>
               )}
             </div>

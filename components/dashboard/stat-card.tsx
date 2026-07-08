@@ -25,29 +25,34 @@ export function StatCard({
   return (
     <div
       className={cn(
-        "premium-card flex items-start gap-4 p-5 transition-shadow duration-200 hover:shadow-premium",
+        "premium-card flex items-start gap-4 p-5 group",
         className,
       )}
     >
       <div
         className={cn(
-          "flex size-11 shrink-0 items-center justify-center rounded-xl",
+          "flex size-11 shrink-0 items-center justify-center rounded-xl transition-transform duration-300 group-hover:scale-105",
           iconBg,
         )}
       >
         <Icon className={cn("size-5", iconColor)} />
       </div>
       <div className="min-w-0 flex-1">
-        <p className="text-xs font-medium text-muted-foreground">{label}</p>
-        <p className="mt-1 text-2xl font-bold text-foreground">{value}</p>
+        <p className="text-xs font-medium text-muted-foreground leading-none mb-2">
+          {label}
+        </p>
+        <p className="text-2xl font-bold tracking-tight text-foreground leading-none">
+          {value}
+        </p>
         {delta && (
           <p
             className={cn(
-              "mt-1 text-xs font-medium",
-              deltaPositive ? "text-teal-400" : "text-destructive",
+              "mt-2 flex items-center gap-1 text-xs font-semibold",
+              deltaPositive ? "text-emerald-600 dark:text-emerald-400" : "text-destructive",
             )}
           >
-            {deltaPositive ? "↑" : "↓"} {delta}
+            <span className="text-[10px]">{deltaPositive ? "↑" : "↓"}</span>
+            {delta}
           </p>
         )}
       </div>

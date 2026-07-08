@@ -13,46 +13,50 @@ import type { ServicePackage } from "@/features/artists/profile-types";
 type StepSummaryProps = {
   artist: Artist;
   packages: ServicePackage[];
+  onConfirmed?: () => void;
 };
 
-export function StepSummary({ artist, packages }: Readonly<StepSummaryProps>) {
+export function StepSummary({ artist, packages, onConfirmed }: Readonly<StepSummaryProps>) {
   const router = useRouter();
-  const { serviceId, date, timeSlot, addMockBooking } = useBookingStore();
+  const { serviceId, date, timeSlot, addBooking } = useBookingStore();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  
+
   const selectedService = packages.find(p => p.id === serviceId);
 
   // Formatting date for display
-  const displayDate = date ? new Date(date).toLocaleDateString("en-US", { 
-    weekday: 'long', 
-    year: 'numeric', 
-    month: 'long', 
-    day: 'numeric' 
+  const displayDate = date ? new Date(date).toLocaleDateString("en-US", {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
   }) : "";
 
   const handleConfirm = () => {
+    if (!selectedService || !date || !timeSlot) return;
     setIsSubmitting(true);
-    
-    // Create mock booking record
-    if (selectedService && date && timeSlot) {
-      addMockBooking({
-        id: Math.random().toString(36).substring(2, 9),
-        artistSlug: artist.slug,
-        artistName: artist.name,
-        artistAvatar: artist.coverImage || "/images/placeholder.svg",
-        serviceId: selectedService.id,
-        serviceName: selectedService.name,
-        date: date,
-        timeSlot: timeSlot,
-        price: selectedService.price,
-        status: "Upcoming",
-      });
-    }
 
-    // Simulate API call
+    // Create the booking record in the store
+    const newBookingId = Math.random().toString(36).substring(2, 9);
+    addBooking({
+      id: newBookingId,
+      artistSlug: artist.slug,
+      artistName: artist.name,
+      artistAvatar: artist.coverImage || artist.avatar || "/images/placeholder.svg",
+      serviceId: selectedService.id,
+      serviceName: selectedService.name,
+      date: date,
+      timeSlot: timeSlot,
+      price: selectedService.price,
+      status: "Upcoming",
+    });
+
+    // Signal the wizard NOT to resetBooking on unmount
+    onConfirmed?.();
+
+    // Navigate to success page
     setTimeout(() => {
       router.push(`/artists/${artist.slug}/book/success`);
-    }, 1500);
+    }, 800);
   };
 
   if (!selectedService || !date || !timeSlot) {
@@ -61,8 +65,8 @@ export function StepSummary({ artist, packages }: Readonly<StepSummaryProps>) {
 
   return (
     <div className="flex flex-col gap-6">
-      <h2 className="text-xl font-semibold text-primary">Review & Confirm</h2>
-      
+      <h2 className="text-xl font-semibold text-primary">Review &amp; Confirm</h2>
+
       <div className="premium-card overflow-hidden">
         {/* Artist Info Header */}
         <div className="bg-primary/5 p-5 border-b border-border flex items-center gap-4">
@@ -83,7 +87,7 @@ export function StepSummary({ artist, packages }: Readonly<StepSummaryProps>) {
             </p>
           </div>
         </div>
-        
+
         <div className="p-5 sm:p-8 grid gap-8 md:grid-cols-2">
           {/* Details */}
           <div className="space-y-6">
@@ -91,7 +95,7 @@ export function StepSummary({ artist, packages }: Readonly<StepSummaryProps>) {
               <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
                 Appointment Details
               </p>
-              
+
               <div className="space-y-4">
                 <div className="flex gap-3">
                   <div className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
@@ -102,7 +106,7 @@ export function StepSummary({ artist, packages }: Readonly<StepSummaryProps>) {
                     <p className="font-medium text-foreground">{displayDate}</p>
                   </div>
                 </div>
-                
+
                 <div className="flex gap-3">
                   <div className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
                     <Clock className="size-4" />
@@ -112,7 +116,7 @@ export function StepSummary({ artist, packages }: Readonly<StepSummaryProps>) {
                     <p className="font-medium text-foreground">{timeSlot}</p>
                   </div>
                 </div>
-                
+
                 <div className="flex gap-3">
                   <div className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
                     <Scissors className="size-4" />
@@ -125,7 +129,7 @@ export function StepSummary({ artist, packages }: Readonly<StepSummaryProps>) {
                 </div>
               </div>
             </div>
-            
+
             <div className="bg-muted rounded-xl p-4 text-sm text-muted-foreground">
               <p className="flex gap-2">
                 <CheckCircle2 className="size-4 text-teal-500 shrink-0 mt-0.5" />
@@ -133,26 +137,26 @@ export function StepSummary({ artist, packages }: Readonly<StepSummaryProps>) {
               </p>
             </div>
           </div>
-          
+
           {/* Pricing Summary */}
           <div className="flex flex-col">
             <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
               Payment Summary
             </p>
-            
+
             <div className="bg-card border-border rounded-2xl border p-5 flex-1 flex flex-col">
               <div className="space-y-3 flex-1 text-sm">
                 <div className="flex justify-between items-start">
                   <span className="text-muted-foreground">{selectedService.name}</span>
                   <span className="font-medium">{rupeeFormatter.format(selectedService.price)}</span>
                 </div>
-                
+
                 <div className="flex justify-between items-start">
-                  <span className="text-muted-foreground">Taxes & Fees</span>
+                  <span className="text-muted-foreground">Taxes &amp; Fees</span>
                   <span className="font-medium">{rupeeFormatter.format(selectedService.price * 0.18)}</span>
                 </div>
               </div>
-              
+
               <div className="border-t border-dashed border-border mt-4 pt-4">
                 <div className="flex justify-between items-end">
                   <span className="font-bold text-foreground">Total</span>
@@ -167,14 +171,14 @@ export function StepSummary({ artist, packages }: Readonly<StepSummaryProps>) {
             </div>
           </div>
         </div>
-        
+
         {/* Footer */}
         <div className="bg-muted p-5 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-border">
           <p className="text-sm text-muted-foreground text-center sm:text-left">
             By confirming, you agree to our Terms of Service and Cancellation Policy.
           </p>
-          <Button 
-            onClick={handleConfirm} 
+          <Button
+            onClick={handleConfirm}
             disabled={isSubmitting}
             size="lg"
             className="w-full sm:w-auto"

@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useRef, useState } from "react";
-import { ArrowUp, Square } from "lucide-react";
+import { ArrowUp, Square, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface ChatInputProps {
@@ -24,7 +24,7 @@ export function ChatInput({
     const el = textareaRef.current;
     if (!el) return;
     el.style.height = "auto";
-    el.style.height = `${Math.min(el.scrollHeight, 160)}px`;
+    el.style.height = `${Math.min(el.scrollHeight, 180)}px`;
   }, []);
 
   function handleChange(e: React.ChangeEvent<HTMLTextAreaElement>) {
@@ -51,18 +51,30 @@ export function ChatInput({
   const canSend = value.trim().length > 0 && !isLoading && !disabled;
 
   return (
-    <div className="border-t border-border bg-background/80 backdrop-blur-xl px-4 py-3">
+    <div className="border-t border-border/60 bg-background/90 px-4 py-3 backdrop-blur-xl">
       <div className="mx-auto max-w-3xl">
         <div
           className={cn(
-            "relative flex items-end gap-2 rounded-2xl border border-border bg-card px-4 py-3 shadow-sm transition-all duration-200",
-            "focus-within:border-ring/50 focus-within:shadow-md focus-within:ring-2 focus-within:ring-ring/20",
+            "relative flex items-end gap-2 rounded-2xl border bg-card px-4 py-3 shadow-sm transition-all duration-200",
+            value.length > 0 || isLoading
+              ? "border-ring/40 shadow-md ring-2 ring-ring/15"
+              : "border-border hover:border-primary/30",
           )}
         >
+          {/* AI indicator */}
+          <div className="mb-1 shrink-0">
+            <Sparkles
+              className={cn(
+                "size-4 transition-colors duration-300",
+                isLoading ? "text-primary animate-pulse" : "text-muted-foreground",
+              )}
+            />
+          </div>
+
           <textarea
             ref={textareaRef}
             aria-label="Message BeautiAssist"
-            className="flex-1 resize-none bg-transparent text-sm text-foreground placeholder:text-muted-foreground focus:outline-none"
+            className="flex-1 resize-none bg-transparent text-sm text-foreground placeholder:text-muted-foreground focus:outline-none min-h-[1.5rem] leading-relaxed"
             disabled={disabled}
             placeholder="Ask about makeup, hairstyles, skincare..."
             rows={1}
@@ -75,7 +87,7 @@ export function ChatInput({
             {isLoading ? (
               <button
                 aria-label="Stop generating"
-                className="flex size-8 items-center justify-center rounded-xl bg-destructive/90 text-white transition-colors hover:bg-destructive"
+                className="flex size-8 items-center justify-center rounded-xl bg-destructive/85 text-white transition-all hover:bg-destructive hover:scale-105 active:scale-95"
                 onClick={onStop}
               >
                 <Square className="size-3 fill-current" />
@@ -86,7 +98,7 @@ export function ChatInput({
                 className={cn(
                   "flex size-8 items-center justify-center rounded-xl transition-all duration-200",
                   canSend
-                    ? "bg-primary text-primary-foreground shadow-soft hover:-translate-y-0.5 hover:bg-plum-600"
+                    ? "bg-primary text-primary-foreground shadow-soft hover:-translate-y-0.5 hover:bg-plum-600 hover:shadow-card active:translate-y-0"
                     : "bg-muted text-muted-foreground cursor-not-allowed",
                 )}
                 disabled={!canSend}
@@ -98,9 +110,8 @@ export function ChatInput({
           </div>
         </div>
 
-        <p className="mt-2 text-center text-[10px] text-muted-foreground">
-          BeautiAssist may make mistakes. Verify important beauty advice with a
-          professional.
+        <p className="mt-2 text-center text-[10px] text-muted-foreground/70">
+          BeautiAssist may make mistakes. Verify important beauty advice with a professional.
         </p>
       </div>
     </div>
