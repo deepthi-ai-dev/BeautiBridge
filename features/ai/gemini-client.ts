@@ -51,8 +51,8 @@ export async function streamBeautyChat(
 
   const model = ai.getGenerativeModel({
     generationConfig: {
-      maxOutputTokens: 1024,
-      temperature: 0.7,
+      maxOutputTokens: 2048,
+      temperature: 0.75,
       topK: 40,
       topP: 0.95,
     },

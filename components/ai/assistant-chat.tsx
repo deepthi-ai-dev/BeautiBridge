@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Menu, MessageSquarePlus, Sparkles } from "lucide-react";
+import { MessageSquarePlus, PanelLeft, Sparkles } from "lucide-react";
 import { useAssistantStore } from "@/stores/assistant-store";
 import { useChat } from "@/hooks/use-chat";
 import { ChatSidebar } from "@/components/ai/chat-sidebar";
@@ -23,7 +23,9 @@ export function AssistantChat() {
   const messages = activeConversation?.messages ?? [];
   const lastMessageContent = messages[messages.length - 1]?.content;
 
-  // Auto-scroll to bottom on new messages
+  // Build combined conversation text for artist keyword detection
+  const conversationText = messages.map((m) => m.content).join(" ");
+
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages.length, lastMessageContent]);
@@ -39,48 +41,38 @@ export function AssistantChat() {
     .at(-1);
 
   return (
-    <div className="flex h-[calc(100vh-5rem)] overflow-hidden">
-      {/* Sidebar */}
-      <ChatSidebar
-        isOpen={sidebarOpen}
-        onClose={() => setSidebarOpen(false)}
-      />
+    <div className="light-section bg-background text-foreground flex h-[calc(100vh-5rem)] overflow-hidden">
+      <ChatSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
       {/* Main Chat Area */}
       <div className="relative flex flex-1 flex-col overflow-hidden">
         {/* Chat Header */}
-        <header className="flex items-center gap-3 border-b border-border bg-background/80 px-4 py-3 backdrop-blur-xl">
-          {/* Mobile sidebar toggle */}
-          <button
-            aria-label="Toggle sidebar"
-            className="flex items-center justify-center rounded-xl p-2 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground md:hidden"
-            onClick={() => setSidebarOpen(true)}
-          >
-            <Menu className="size-5" />
-          </button>
+        <header className="relative flex items-center gap-3 border-b border-border/50 bg-white/85 px-4 py-3 backdrop-blur-xl">
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-border to-transparent" />
 
-          {/* Desktop sidebar toggle */}
           <button
             aria-label="Toggle sidebar"
-            className="hidden items-center justify-center rounded-xl p-2 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground md:flex"
+            className="flex items-center justify-center rounded-xl p-2 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
             onClick={() => setSidebarOpen((v) => !v)}
           >
-            <Menu className="size-5" />
+            <PanelLeft className="size-5" />
           </button>
 
-          <div className="flex flex-1 items-center gap-2 min-w-0">
-            <div className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-salmon-300 to-primary">
-              <Sparkles className="size-3.5 text-white" />
+          <div className="flex flex-1 items-center gap-3 min-w-0">
+            <div className="relative flex size-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-salmon-300 to-primary shadow-[0_4px_12px_rgba(84,40,67,0.25)]">
+              <Sparkles className="size-4 text-white" />
+              <span className="absolute -right-0.5 -top-0.5 size-3 rounded-full border-2 border-card bg-teal-500" />
             </div>
             <div className="min-w-0">
-              <p className="truncate text-sm font-semibold text-foreground">
+              <p className="truncate text-sm font-bold text-foreground">
                 {activeConversation?.title ?? "BeautiAssist"}
               </p>
-              {isLoading && (
-                <p className="text-[10px] text-primary animate-pulse">
-                  Generating response...
+              <div className="flex items-center gap-1.5">
+                <span className="size-1.5 rounded-full bg-teal-500 animate-pulse" />
+                <p className="text-[10px] font-medium text-muted-foreground">
+                  {isLoading ? "Generating response..." : "Live · replies instantly"}
                 </p>
-              )}
+              </div>
             </div>
           </div>
 
@@ -88,6 +80,7 @@ export function AssistantChat() {
             aria-label="New conversation"
             size="sm"
             variant="outline"
+            className="rounded-xl border-border/60 bg-card text-foreground hover:bg-muted"
             onClick={handleNewConversation}
           >
             <MessageSquarePlus className="size-4" />
@@ -98,7 +91,7 @@ export function AssistantChat() {
         {/* Messages Area */}
         <div
           className={cn(
-            "flex-1 overflow-y-auto scroll-smooth",
+            "flex-1 overflow-y-auto bg-[linear-gradient(180deg,rgba(255,248,239,0.7),rgba(255,244,234,0.5))]",
             messages.length === 0 && "flex items-center justify-center",
           )}
           id="chat-messages"
@@ -107,27 +100,22 @@ export function AssistantChat() {
             <div className="w-full">
               <SuggestedPrompts
                 onSelect={(prompt) => {
-                  if (!activeConversationId) {
-                    newConversation();
-                  }
+                  if (!activeConversationId) newConversation();
                   sendMessage(prompt);
                 }}
               />
             </div>
           ) : (
-            <div className="mx-auto max-w-3xl py-4">
+            <div className="group mx-auto max-w-3xl py-4">
               {messages.map((message, index) => (
-                <div
+                <ChatMessageBubble
                   key={message.id}
-                  className="animate-[fade-up_0.3s_ease-out]"
-                >
-                  <ChatMessageBubble
-                    isLastAssistant={index === lastAssistantIndex}
-                    isLoading={isLoading}
-                    message={message}
-                    onRegenerate={regenerateLastMessage}
-                  />
-                </div>
+                  conversationText={conversationText}
+                  isLastAssistant={index === lastAssistantIndex}
+                  isLoading={isLoading}
+                  message={message}
+                  onRegenerate={regenerateLastMessage}
+                />
               ))}
               <div ref={messagesEndRef} />
             </div>
