@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Plus, Edit2, Trash2, CheckCircle2 } from "lucide-react";
+import { Plus, Edit2, Trash2 } from "lucide-react";
 import { MOCK_ARTIST_SERVICES, type MockArtistService } from "@/lib/mock-data";
 import { FadeUp, StaggerContainer } from "@/lib/motion";
 

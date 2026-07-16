@@ -1,234 +1,428 @@
 "use client";
 
-import { useState, useTransition } from "react";
-import { Camera, User, Award, Globe, Link as LinkIcon, Sparkles, Loader2 } from "lucide-react";
+import { useState, useTransition, useEffect } from "react";
+import {
+  Camera,
+  Award,
+  Globe,
+  Link as LinkIcon,
+  Sparkles,
+  Loader2,
+  User,
+  Phone,
+  MapPin,
+  IndianRupee,
+  CheckCircle2,
+  XCircle,
+} from "lucide-react";
 import { AvatarInitials } from "@/components/dashboard/ui-helpers";
-import { FadeUp, StaggerContainer } from "@/lib/motion";
+import { FadeUp, StaggerContainer, PopIn } from "@/lib/motion";
 import { updateArtistProfileAction } from "@/features/artist/actions";
+import { CITIES } from "@/features/artists/types";
 
-export function ArtistProfileForm({ user }: { user: { name?: string | null, phone?: string | null, city?: string | null, dob?: string | null, address?: string | null, experience?: string | null, about?: string | null, languages?: string | null, pricing?: number | null, instagram?: string | null, facebook?: string | null, specialties?: string | null } }) {
-  const [isPending, startTransition] = useTransition();
-  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+// ─── Inline Toast ────────────────────────────────────────────────────────────
+type ToastState = { type: "success" | "error"; message: string } | null;
 
-  const [about, setAbout] = useState(
-    user?.about || ""
+function InlineToast({ toast, onDismiss }: { toast: ToastState; onDismiss: () => void }) {
+  useEffect(() => {
+    if (!toast) return;
+    const t = setTimeout(onDismiss, 4500);
+    return () => clearTimeout(t);
+  }, [toast, onDismiss]);
+
+  if (!toast) return null;
+
+  const isSuccess = toast.type === "success";
+  return (
+    <PopIn
+      className={`flex items-start gap-3 rounded-xl px-4 py-3 text-sm font-medium border ${
+        isSuccess
+          ? "bg-emerald-50 border-emerald-200 text-emerald-800"
+          : "bg-red-50 border-red-200 text-red-800"
+      }`}
+    >
+      {isSuccess ? (
+        <CheckCircle2 className="size-4.5 shrink-0 mt-0.5 text-emerald-600" />
+      ) : (
+        <XCircle className="size-4.5 shrink-0 mt-0.5 text-red-500" />
+      )}
+      <span className="flex-1">{toast.message}</span>
+      <button type="button" onClick={onDismiss} className="text-current opacity-60 hover:opacity-100 transition-opacity ml-2">
+        ✕
+      </button>
+    </PopIn>
   );
-  const [experience, setExperience] = useState(user?.experience || "");
-  const [languages, setLanguages] = useState(user?.languages || "");
-  const [pricing, setPricing] = useState(user?.pricing || 0);
-  const [instagram, setInstagram] = useState(user?.instagram || "");
-  const [facebook, setFacebook] = useState(user?.facebook || "");
-  
-  const parsedSpecialties = user?.specialties ? user.specialties.split(",") : ["bridal", "party"];
-  const [specialties, setSpecialties] = useState({
-    bridal: parsedSpecialties.includes("bridal"),
-    hair: parsedSpecialties.includes("hair"),
-    nails: parsedSpecialties.includes("nails"),
-    party: parsedSpecialties.includes("party"),
-    skincare: parsedSpecialties.includes("skincare"),
-  });
+}
+
+// ─── Specialty pill list ─────────────────────────────────────────────────────
+const SPECIALTY_OPTIONS = [
+  { key: "bridal", label: "👰 Bridal" },
+  { key: "party", label: "🎉 Party" },
+  { key: "hair", label: "💇 Hair" },
+  { key: "nails", label: "💅 Nails" },
+  { key: "skincare", label: "✨ Skincare" },
+  { key: "editorial", label: "📸 Editorial" },
+];
+
+// ─── City options (exclude "All Cities" sentinel) ───────────────────────────
+const CITY_OPTIONS = CITIES.filter((c) => c !== "All Cities");
+
+// ─── User type accepted by the form ─────────────────────────────────────────
+type UserProfile = {
+  name?: string | null;
+  phone?: string | null;
+  city?: string | null;
+  dob?: string | null;
+  address?: string | null;
+  experience?: string | null;
+  about?: string | null;
+  languages?: string | null;
+  instagram?: string | null;
+  facebook?: string | null;
+  pricing?: number | null;
+  specialties?: string | null;
+};
+
+// ─── Field row helper ────────────────────────────────────────────────────────
+function FieldRow({
+  icon: Icon,
+  label,
+  children,
+  span2 = false,
+}: {
+  icon: React.ElementType;
+  label: string;
+  children: React.ReactNode;
+  span2?: boolean;
+}) {
+  return (
+    <div className={`space-y-1.5 ${span2 ? "sm:col-span-2" : ""}`}>
+      <label className="text-xs font-semibold text-muted-foreground flex items-center gap-1.5">
+        <Icon className="size-3.5" /> {label}
+      </label>
+      {children}
+    </div>
+  );
+}
+
+const inputCls =
+  "w-full rounded-xl border border-border bg-card px-4 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring/30 transition-colors";
+
+// ─── Main component ──────────────────────────────────────────────────────────
+export function ArtistProfileForm({ user }: { user: UserProfile }) {
+  const [isPending, startTransition] = useTransition();
+  const [toast, setToast] = useState<ToastState>(null);
+
+  // Form state
+  const [name, setName] = useState(user?.name ?? "");
+  const [phone, setPhone] = useState(user?.phone ?? "");
+  const [city, setCity] = useState(user?.city ?? "");
+  const [about, setAbout] = useState(user?.about ?? "");
+  const [experience, setExperience] = useState(user?.experience ?? "");
+  const [languages, setLanguages] = useState(user?.languages ?? "");
+  const [pricing, setPricing] = useState<number>(user?.pricing ?? 0);
+  const [instagram, setInstagram] = useState(user?.instagram ?? "");
+  const [facebook, setFacebook] = useState(user?.facebook ?? "");
+
+  // Specialties as a set of selected keys
+  const parsedSpecialties = new Set(
+    user?.specialties ? user.specialties.split(",").map((s) => s.trim()) : [],
+  );
+  const [selectedSpecialties, setSelectedSpecialties] = useState<Set<string>>(parsedSpecialties);
+
+  function toggleSpecialty(key: string) {
+    setSelectedSpecialties((prev) => {
+      const next = new Set(prev);
+      if (next.has(key)) {
+        next.delete(key);
+      } else {
+        next.add(key);
+      }
+      return next;
+    });
+  }
+
+  // Derive display initials from name
+  const initials = name
+    .split(" ")
+    .filter(Boolean)
+    .map((w) => w[0].toUpperCase())
+    .slice(0, 2)
+    .join("") || "?";
 
   function handleSave(e: React.FormEvent) {
     e.preventDefault();
-    setErrorMsg(null);
-    const activeSpecialties = Object.entries(specialties)
-      .filter(([_, isActive]) => isActive)
-      .map(([key]) => key)
-      .join(",");
+    setToast(null);
 
     startTransition(async () => {
       const res = await updateArtistProfileAction({
-        name: user?.name,
-        phone: user?.phone,
-        city: user?.city,
-        dob: user?.dob,
-        address: user?.address,
-        about,
-        experience: String(experience),
-        languages,
-        pricing: Number(pricing),
-        instagram,
-        facebook,
-        specialties: activeSpecialties,
+        name: name.trim() || undefined,
+        phone: phone.trim() || undefined,
+        city: city || undefined,
+        about: about.trim() || undefined,
+        specialties: Array.from(selectedSpecialties).join(",") || undefined,
+        languages: languages.trim() || undefined,
+        experience: experience.trim() || undefined,
+        pricing: pricing > 0 ? pricing : undefined,
+        instagram: instagram.trim() || undefined,
+        facebook: facebook.trim() || undefined,
       });
 
       if (res.status === "error") {
-        setErrorMsg(res.message);
+        setToast({ type: "error", message: res.message });
       } else {
-        alert("Artist profile configuration saved successfully!");
+        setToast({ type: "success", message: "✨ Profile saved! Your public listing has been updated." });
       }
     });
   }
 
-  function toggleSpecialty(key: keyof typeof specialties) {
-    setSpecialties((prev) => ({ ...prev, [key]: !prev[key] }));
-  }
-
   return (
-    <StaggerContainer className="space-y-6">
-      <div className="border-b border-border pb-3">
+    <StaggerContainer className="space-y-6 max-w-3xl">
+      {/* Page header */}
+      <FadeUp className="border-b border-border pb-3">
         <h2 className="text-xl font-bold text-foreground">Studio Profile</h2>
-        <p className="text-xs text-muted-foreground mt-1">Configure your public artist bio, specialties, rates, and links</p>
-      </div>
+        <p className="text-xs text-muted-foreground mt-1">
+          Configure your public artist bio, specialties, rates, and social links
+        </p>
+      </FadeUp>
 
       <form onSubmit={handleSave} className="space-y-6">
-        {/* Profile Avatar Banner */}
-        <FadeUp className="flex flex-col sm:flex-row items-center gap-5 p-4 rounded-2xl bg-card border border-border">
+        {/* ── Avatar banner ─────────────────────────────────────────────────── */}
+        <FadeUp className="flex flex-col sm:flex-row items-center gap-5 p-5 rounded-2xl bg-gradient-to-br from-primary/5 via-card to-secondary/10 border border-border shadow-soft">
           <div className="relative">
-            <AvatarInitials initials="PK" gradient="from-gold-400 to-salmon-400" size="lg" />
+            <AvatarInitials
+              initials={initials}
+              gradient="from-gold-400 to-salmon-400"
+              size="lg"
+            />
             <button
               type="button"
-              onClick={() => alert("Photo upload is mocked.")}
+              onClick={() => alert("Photo upload coming soon!")}
               className="absolute -bottom-1 -right-1 bg-primary text-primary-foreground p-1.5 rounded-full hover:bg-plum-600 transition-colors shadow-soft"
               title="Change Profile Photo"
             >
               <Camera className="size-3.5" />
             </button>
           </div>
-          <div className="text-center sm:text-left space-y-1">
-            <h3 className="font-semibold text-foreground text-sm">Priya Kapoor</h3>
-            <p className="text-xs text-muted-foreground">Bridal Makeup Artist · Koramangala, Bangalore</p>
+          <div className="text-center sm:text-left space-y-0.5">
+            <h3 className="font-bold text-foreground text-base leading-tight">
+              {name || "Your Name"}
+            </h3>
+            <p className="text-xs text-muted-foreground">
+              {Array.from(selectedSpecialties).map((s) => s.charAt(0).toUpperCase() + s.slice(1)).join(" · ") || "Artist"}{" "}
+              {city ? `· ${city}` : ""}
+            </p>
             <button
               type="button"
-              onClick={() => alert("Upload logo coming soon")}
-              className="text-xs font-semibold text-primary hover:underline"
+              onClick={() => alert("Portfolio banner upload coming soon")}
+              className="text-[11px] font-semibold text-primary hover:underline"
             >
               Upload custom portfolio banner
             </button>
           </div>
         </FadeUp>
 
-        {/* Input Fields Grid */}
-        <FadeUp className="grid gap-4 sm:grid-cols-2">
-          {/* About Bio */}
-          <div className="space-y-1.5 sm:col-span-2">
-            <label htmlFor="about-input" className="text-xs font-semibold text-muted-foreground flex items-center gap-1.5">
-              <Sparkles className="size-3.5" /> Professional Bio / About
-            </label>
-            <textarea
-              id="about-input"
-              rows={4}
-              required
-              value={about}
-              onChange={(e) => setAbout(e.target.value)}
-              className="w-full rounded-xl border border-border bg-card px-4 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring/30 resize-none leading-relaxed"
-            />
-          </div>
+        {/* ── Core identity fields ───────────────────────────────────────────── */}
+        <FadeUp className="premium-card p-5 space-y-4">
+          <h3 className="text-sm font-bold text-foreground border-b border-border pb-2 flex items-center gap-1.5">
+            <User className="size-4 text-primary" /> Basic Information
+          </h3>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <FieldRow icon={User} label="Display Name">
+              <input
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="e.g. Priya Kapoor"
+                className={inputCls}
+              />
+            </FieldRow>
 
-          {/* Experience */}
-          <div className="space-y-1.5">
-            <label htmlFor="experience-input" className="text-xs font-semibold text-muted-foreground flex items-center gap-1.5">
-              <Award className="size-3.5" /> Years of Experience
-            </label>
-            <input
-              id="experience-input"
-              type="number"
-              required
-              min={0}
-              value={experience}
-              onChange={(e) => setExperience(e.target.value)}
-              className="w-full rounded-xl border border-border bg-card px-4 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring/30"
-            />
-          </div>
+            <FieldRow icon={Phone} label="Phone Number">
+              <input
+                type="tel"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                placeholder="e.g. 9876543210"
+                className={inputCls}
+              />
+            </FieldRow>
 
-          {/* Languages */}
-          <div className="space-y-1.5">
-            <label htmlFor="languages-input" className="text-xs font-semibold text-muted-foreground flex items-center gap-1.5">
-              <Globe className="size-3.5" /> Spoken Languages
-            </label>
-            <input
-              id="languages-input"
-              type="text"
-              required
-              value={languages}
-              onChange={(e) => setLanguages(e.target.value)}
-              className="w-full rounded-xl border border-border bg-card px-4 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring/30"
-            />
-          </div>
+            <FieldRow icon={MapPin} label="City">
+              <select
+                value={city}
+                onChange={(e) => setCity(e.target.value)}
+                className={inputCls}
+              >
+                <option value="">— Select your city —</option>
+                {CITY_OPTIONS.map((c) => (
+                  <option key={c} value={c}>
+                    {c}
+                  </option>
+                ))}
+              </select>
+            </FieldRow>
 
-          {/* Specialties Checkboxes */}
-          <div className="space-y-2 sm:col-span-2">
-            <span className="text-xs font-semibold text-muted-foreground block">Specialty Badges</span>
-            <div className="flex flex-wrap gap-2.5">
-              {(Object.keys(specialties) as Array<keyof typeof specialties>).map((key) => (
+            <FieldRow icon={IndianRupee} label="Starting Price (₹)">
+              <input
+                type="number"
+                min={0}
+                step={100}
+                value={pricing}
+                onChange={(e) => setPricing(parseInt(e.target.value) || 0)}
+                placeholder="e.g. 2500"
+                className={inputCls}
+              />
+            </FieldRow>
+
+            <FieldRow icon={Sparkles} label="Professional Bio / About" span2>
+              <textarea
+                rows={4}
+                value={about}
+                onChange={(e) => setAbout(e.target.value)}
+                placeholder="Tell potential clients about your style, expertise, and what makes your work unique..."
+                className={`${inputCls} resize-none leading-relaxed`}
+              />
+            </FieldRow>
+          </div>
+        </FadeUp>
+
+        {/* ── Specialties ────────────────────────────────────────────────────── */}
+        <FadeUp className="premium-card p-5 space-y-4">
+          <h3 className="text-sm font-bold text-foreground border-b border-border pb-2 flex items-center gap-1.5">
+            <Sparkles className="size-4 text-primary" /> Specialty Badges
+          </h3>
+          <p className="text-xs text-muted-foreground">
+            Select all that apply — these appear on your public profile card.
+          </p>
+          <div className="flex flex-wrap gap-2.5">
+            {SPECIALTY_OPTIONS.map(({ key, label }) => {
+              const active = selectedSpecialties.has(key);
+              return (
                 <button
                   key={key}
                   type="button"
                   onClick={() => toggleSpecialty(key)}
                   className={`rounded-full px-4 py-1.5 text-xs font-semibold border transition-all ${
-                    specialties[key]
-                      ? "bg-primary text-primary-foreground border-primary"
-                      : "bg-transparent text-muted-foreground border-border hover:bg-muted"
+                    active
+                      ? "bg-primary text-primary-foreground border-primary shadow-soft"
+                      : "bg-transparent text-muted-foreground border-border hover:bg-muted hover:border-primary/40"
                   }`}
                 >
-                  {key.charAt(0).toUpperCase() + key.slice(1)}
+                  {label}
                 </button>
-              ))}
-            </div>
+              );
+            })}
           </div>
-
-          {/* Pricing starting from */}
-          <div className="space-y-1.5">
-            <label htmlFor="pricing-input" className="text-xs font-semibold text-muted-foreground flex items-center gap-1.5">
-              Starting Price (₹)
+          {/* Comma-separated input as an alternative */}
+          <div className="space-y-1.5 pt-1">
+            <label className="text-[10px] font-semibold text-muted-foreground">
+              Or enter custom specialties (comma-separated)
             </label>
             <input
-              id="pricing-input"
-              type="number"
-              required
-              min={0}
-              value={pricing}
-              onChange={(e) => setPricing(parseInt(e.target.value) || 0)}
-              className="w-full rounded-xl border border-border bg-card px-4 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring/30"
+              type="text"
+              value={Array.from(selectedSpecialties).join(", ")}
+              onChange={(e) =>
+                setSelectedSpecialties(
+                  new Set(
+                    e.target.value
+                      .split(",")
+                      .map((s) => s.trim().toLowerCase())
+                      .filter(Boolean),
+                  ),
+                )
+              }
+              placeholder="e.g. bridal, hair, nails"
+              className={inputCls}
             />
-          </div>
-
-          {/* Social Links */}
-          <div className="space-y-4 sm:col-span-2">
-            <span className="text-xs font-semibold text-muted-foreground block border-t border-border pt-4">
-              Connected Channels
-            </span>
-
-            <div className="grid gap-3 sm:grid-cols-2">
-              <div className="space-y-1.5">
-                <label htmlFor="instagram-input" className="text-[10px] font-semibold text-muted-foreground flex items-center gap-1">
-                  <LinkIcon className="size-3.5" /> Instagram Username
-                </label>
-                <input
-                  id="instagram-input"
-                  type="text"
-                  value={instagram}
-                  onChange={(e) => setInstagram(e.target.value)}
-                  className="w-full rounded-xl border border-border bg-card px-4 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring/30"
-                />
-              </div>
-
-              <div className="space-y-1.5">
-                <label htmlFor="facebook-input" className="text-[10px] font-semibold text-muted-foreground flex items-center gap-1">
-                  <LinkIcon className="size-3.5" /> Facebook Page Handle
-                </label>
-                <input
-                  id="facebook-input"
-                  type="text"
-                  value={facebook}
-                  onChange={(e) => setFacebook(e.target.value)}
-                  className="w-full rounded-xl border border-border bg-card px-4 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring/30"
-                />
-              </div>
-            </div>
           </div>
         </FadeUp>
 
-        {/* Submit */}
-        {errorMsg && <p className="text-destructive text-sm text-right px-4">{errorMsg}</p>}
+        {/* ── Professional details ────────────────────────────────────────────── */}
+        <FadeUp className="premium-card p-5 space-y-4">
+          <h3 className="text-sm font-bold text-foreground border-b border-border pb-2 flex items-center gap-1.5">
+            <Award className="size-4 text-primary" /> Professional Details
+          </h3>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <FieldRow icon={Award} label="Years of Experience">
+              <input
+                type="number"
+                min={0}
+                max={50}
+                value={experience}
+                onChange={(e) => setExperience(e.target.value)}
+                placeholder="e.g. 5"
+                className={inputCls}
+              />
+            </FieldRow>
+
+            <FieldRow icon={Globe} label="Spoken Languages">
+              <input
+                type="text"
+                value={languages}
+                onChange={(e) => setLanguages(e.target.value)}
+                placeholder="e.g. Hindi, English, Tamil"
+                className={inputCls}
+              />
+            </FieldRow>
+          </div>
+        </FadeUp>
+
+        {/* ── Social links ────────────────────────────────────────────────────── */}
+        <FadeUp className="premium-card p-5 space-y-4">
+          <h3 className="text-sm font-bold text-foreground border-b border-border pb-2 flex items-center gap-1.5">
+            <LinkIcon className="size-4 text-primary" /> Connected Channels
+          </h3>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <FieldRow icon={LinkIcon} label="Instagram Username">
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm select-none">@</span>
+                <input
+                  type="text"
+                  value={instagram}
+                  onChange={(e) => setInstagram(e.target.value)}
+                  placeholder="yourhandle"
+                  className={`${inputCls} pl-8`}
+                />
+              </div>
+            </FieldRow>
+
+            <FieldRow icon={LinkIcon} label="Facebook Page Handle">
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm select-none">@</span>
+                <input
+                  type="text"
+                  value={facebook}
+                  onChange={(e) => setFacebook(e.target.value)}
+                  placeholder="yourpage"
+                  className={`${inputCls} pl-8`}
+                />
+              </div>
+            </FieldRow>
+          </div>
+        </FadeUp>
+
+        {/* ── Toast feedback ────────────────────────────────────────────────── */}
+        <InlineToast toast={toast} onDismiss={() => setToast(null)} />
+
+        {/* ── Submit ───────────────────────────────────────────────────────── */}
         <FadeUp className="flex justify-end pt-2 border-t border-border">
           <button
             type="submit"
             disabled={isPending}
-            className="rounded-full bg-primary hover:bg-plum-600 px-6 py-2.5 text-sm font-semibold text-primary-foreground shadow-soft transition-all flex items-center disabled:opacity-50"
+            className="rounded-full bg-primary hover:bg-plum-600 px-7 py-2.5 text-sm font-semibold text-primary-foreground shadow-soft transition-all flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {isPending && <Loader2 className="mr-2 size-4 animate-spin" />}
-            Save Profile Config
+            {isPending ? (
+              <>
+                <Loader2 className="size-4 animate-spin" />
+                Saving…
+              </>
+            ) : (
+              <>
+                <Sparkles className="size-4" />
+                Save Profile
+              </>
+            )}
           </button>
         </FadeUp>
       </form>

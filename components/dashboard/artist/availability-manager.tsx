@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Plus, X, Calendar, Clock, Sparkles } from "lucide-react";
+import { Plus, X, Clock } from "lucide-react";
 import { MOCK_AVAILABILITY, type MockAvailabilityDay } from "@/lib/mock-data";
 import { FadeUp, StaggerContainer } from "@/lib/motion";
 import { cn } from "@/lib/utils";

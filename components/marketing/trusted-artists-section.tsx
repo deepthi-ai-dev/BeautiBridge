@@ -4,7 +4,7 @@ import { ArrowRight, CalendarCheck, Heart, ShieldCheck } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { FadeUp, StaggerContainer } from "@/lib/motion";
-import { queryArtists } from "@/features/artists/queries";
+import { queryRealArtists } from "@/features/artists/real-queries";
 import type { Artist } from "@/features/artists/types";
 import { rupeeFormatter } from "@/lib/formatters";
 
@@ -14,8 +14,8 @@ const badgeVariant = {
   "Highly Booked": "salmon",
 } as const;
 
-export function TrustedArtistsSection() {
-  const { artists } = queryArtists({
+export async function TrustedArtistsSection() {
+  const { artists } = await queryRealArtists({
     query: "",
     category: "all",
     city: "",

@@ -31,33 +31,66 @@ export function StepSummary({ artist, packages, onConfirmed }: Readonly<StepSumm
     day: 'numeric'
   }) : "";
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     if (!selectedService || !date || !timeSlot) return;
     setIsSubmitting(true);
 
-    // Create the booking record in the store
-    const newBookingId = Math.random().toString(36).substring(2, 9);
-    addBooking({
-      id: newBookingId,
-      artistSlug: artist.slug,
-      artistName: artist.name,
-      artistAvatar: artist.coverImage || artist.avatar || "/images/placeholder.svg",
-      serviceId: selectedService.id,
-      serviceName: selectedService.name,
-      date: date,
-      timeSlot: timeSlot,
-      price: selectedService.price,
-      status: "Upcoming",
-    });
+    // Mock artists have short numeric IDs like "1","2" — they don't exist in
+    // the database, so we skip the API and create a local booking instead.
+    const isMockArtist = /^\d+$/.test(artist.id);
 
-    // Signal the wizard NOT to resetBooking on unmount
-    onConfirmed?.();
+    try {
+      let bookingId: string;
 
-    // Navigate to success page
-    setTimeout(() => {
+      if (isMockArtist) {
+        // Generate a client-side booking ID for demo purposes
+        bookingId = `mock-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+      } else {
+        const response = await fetch("/api/bookings", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            artistId: artist.id,
+            serviceId: selectedService.id,
+            date,
+            time: timeSlot,
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to book appointment");
+        }
+
+        const { booking } = await response.json();
+        bookingId = booking.id;
+      }
+
+      // Create the booking record in the local store
+      addBooking({
+        id: bookingId,
+        artistSlug: artist.slug,
+        artistName: artist.name,
+        artistAvatar: artist.coverImage || artist.avatar || "/images/placeholder.svg",
+        serviceId: selectedService.id,
+        serviceName: selectedService.name,
+        date: date,
+        timeSlot: timeSlot,
+        price: selectedService.price,
+        status: "Upcoming",
+      });
+
+      // Signal the wizard NOT to resetBooking on unmount
+      onConfirmed?.();
+
+      // Navigate to success page
       router.push(`/artists/${artist.slug}/book/success`);
-    }, 800);
+    } catch (error) {
+      console.error(error);
+      setIsSubmitting(false);
+      alert("Something went wrong while booking. Please try again.");
+    }
   };
+
 
   if (!selectedService || !date || !timeSlot) {
     return <div>Missing booking information. Please go back.</div>;

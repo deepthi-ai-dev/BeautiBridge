@@ -26,6 +26,8 @@ export function ArtistProfilePreview({
   artist,
   onClose,
 }: ArtistProfilePreviewProps) {
+  const isMapListing = artist?.source === "maps";
+
   return (
     <AnimatePresence>
       {artist && (
@@ -99,13 +101,16 @@ export function ArtistProfilePreview({
                     <p className="text-muted-foreground mt-0.5 flex items-center gap-1 text-sm">
                       <MapPin className="size-3.5 shrink-0" />
                       {artist.city}, {artist.state}
+                      {artist.distanceKm !== undefined && ` · ${artist.distanceKm} km`}
                     </p>
                   </div>
                   <div className="text-right">
                     <p className="text-primary font-semibold">
-                      {rupeeFormatter.format(artist.startingPrice)}
+                      {isMapListing ? "Maps" : rupeeFormatter.format(artist.startingPrice)}
                     </p>
-                    <p className="text-muted-foreground text-xs">starting</p>
+                    <p className="text-muted-foreground text-xs">
+                      {isMapListing ? "listing" : "starting"}
+                    </p>
                   </div>
                 </div>
 
@@ -185,18 +190,34 @@ export function ArtistProfilePreview({
                 )}
 
                 {/* CTA buttons */}
-                <div className="grid grid-cols-2 gap-3 pt-1">
-                  <Link href={`/artists/${artist.slug}`}>
-                    <Button className="w-full" size="sm" variant="outline">
-                      Full Profile
-                    </Button>
-                  </Link>
-                  <Link href={`/artists/${artist.slug}/book`}>
-                    <Button className="w-full" size="sm" variant="primary">
-                      Book Session
-                    </Button>
-                  </Link>
-                </div>
+                {isMapListing ? (
+                  <div className="pt-1">
+                    {artist.externalUrl ? (
+                      <a href={artist.externalUrl} rel="noreferrer" target="_blank">
+                        <Button className="w-full" size="sm" variant="primary">
+                          Open Maps
+                        </Button>
+                      </a>
+                    ) : (
+                      <Button className="w-full" disabled size="sm" variant="outline">
+                        Maps link unavailable
+                      </Button>
+                    )}
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-2 gap-3 pt-1">
+                    <Link href={`/artists/${artist.slug}`}>
+                      <Button className="w-full" size="sm" variant="outline">
+                        Full Profile
+                      </Button>
+                    </Link>
+                    <Link href={`/artists/${artist.slug}/book`}>
+                      <Button className="w-full" size="sm" variant="primary">
+                        Book Session
+                      </Button>
+                    </Link>
+                  </div>
+                )}
               </div>
             </div>
           </motion.div>

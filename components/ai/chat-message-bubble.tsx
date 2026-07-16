@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Bot, Check, Copy, RefreshCw, Sparkles, User } from "lucide-react";
+import { Check, Copy, RefreshCw, Sparkles, User } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";

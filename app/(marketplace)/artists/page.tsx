@@ -9,7 +9,7 @@ export const metadata: Metadata = {
     "Browse 500+ verified freelance makeup artists, hair stylists, nail artists, and beauty professionals near you. Filter by category, city, rating, and price.",
 };
 
-export default function ArtistsPage() {
+export default async function ArtistsPage() {
   return (
     <>
       <SiteHeader />
@@ -44,3 +44,4 @@ export default function ArtistsPage() {
     </>
   );
 }
+

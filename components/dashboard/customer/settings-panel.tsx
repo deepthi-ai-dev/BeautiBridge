@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Eye, Bell, Globe, Lock, Trash2, Key } from "lucide-react";
+import { Bell, Globe, Lock, Trash2, Key } from "lucide-react";
 import { FadeUp, StaggerContainer } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 

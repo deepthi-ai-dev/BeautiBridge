@@ -4,19 +4,20 @@ import { z } from "zod";
 import { auth, unstable_update } from "@/auth";
 import { db } from "@/server/db";
 
+// All fields optional — form can save partial progress
 const artistProfileSchema = z.object({
-  name: z.string().min(2, "Name is required"),
-  phone: z.string().min(10, "Valid phone is required"),
-  city: z.string().min(2, "City is required"),
-  dob: z.string().min(2, "Date of birth is required"),
-  address: z.string().min(5, "Address is required"),
-  experience: z.string().min(1, "Experience is required"),
-  about: z.string().min(10, "Bio must be at least 10 characters"),
-  languages: z.string().min(2, "Languages are required"),
+  name: z.string().min(2, "Name must be at least 2 characters").optional(),
+  phone: z.string().min(10, "Valid phone is required").optional(),
+  city: z.string().min(2, "City is required").optional(),
+  dob: z.string().optional(),
+  address: z.string().optional(),
+  experience: z.string().optional(),
+  about: z.string().min(10, "Bio must be at least 10 characters").optional(),
+  languages: z.string().optional(),
   hobbies: z.string().optional(),
   instagram: z.string().optional(),
   facebook: z.string().optional(),
-  pricing: z.coerce.number().optional(),
+  pricing: z.coerce.number().int().min(0).optional(),
   specialties: z.string().optional(),
 });
 
@@ -25,15 +26,18 @@ export async function updateArtistProfileAction(input: unknown) {
   if (!session?.user?.id) return { status: "error", message: "Unauthorized" };
 
   const parsed = artistProfileSchema.safeParse(input);
-  if (!parsed.success) return { status: "error", message: "Invalid fields" };
+  if (!parsed.success) {
+    const firstError = Object.values(parsed.error.flatten().fieldErrors).flat()[0];
+    return { status: "error", message: firstError ?? "Invalid fields" };
+  }
 
   try {
     await db.user.update({
       where: { id: session.user.id },
       data: parsed.data,
     });
-    
-    // Update the JWT session cookie to reflect the new core data immediately
+
+    // Reflect key identity fields in the JWT session immediately
     await unstable_update({
       user: {
         name: parsed.data.name,
@@ -41,11 +45,12 @@ export async function updateArtistProfileAction(input: unknown) {
         city: parsed.data.city,
         dob: parsed.data.dob,
         address: parsed.data.address,
-      }
+      },
     });
 
     return { status: "success", message: "Profile updated successfully" };
   } catch (error) {
-    return { status: "error", message: "Failed to update profile" };
+    console.error("[updateArtistProfileAction] DB error:", error);
+    return { status: "error", message: "Failed to update profile. Please try again." };
   }
 }

@@ -26,14 +26,19 @@ export type Artist = {
   portfolio: string[];
   languages: string[];
   availability: "available" | "busy" | "unavailable";
+  source?: "beautibridge" | "maps";
+  externalUrl?: string;
+  distanceKm?: number;
 };
 
 export type ArtistFilters = {
   query: string;
   category: ArtistCategory | "all";
   city: string;
-  sortBy: "rating" | "price_asc" | "price_desc" | "reviews";
+  sortBy: "distance" | "rating" | "price_asc" | "price_desc" | "reviews";
   page: number;
+  latitude?: number;
+  longitude?: number;
 };
 
 export const CATEGORIES: { label: string; value: ArtistCategory | "all" }[] = [

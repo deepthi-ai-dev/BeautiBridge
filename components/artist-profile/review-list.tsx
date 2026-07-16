@@ -1,9 +1,15 @@
+"use client";
+
+import { useState } from "react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { Star, ThumbsUp } from "lucide-react";
 import { RatingStars } from "@/components/marketplace/rating-stars";
 import type { Review } from "@/features/artists/profile-types";
+import { Button } from "@/components/ui/button";
 
 type ReviewListProps = {
+  artistId?: string;
   reviews: Review[];
   totalCount: number;
   averageRating: number;
@@ -39,12 +45,84 @@ function RatingBar({
 }
 
 export function ReviewList({
+  artistId,
   reviews,
   totalCount,
   averageRating,
 }: Readonly<ReviewListProps>) {
+  const router = useRouter();
+  const [rating, setRating] = useState(5);
+  const [body, setBody] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!artistId) return;
+
+    setIsSubmitting(true);
+    try {
+      const response = await fetch("/api/reviews", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ artistId, rating, body, service: "General" }),
+      });
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          alert("Please login to post a review.");
+          router.push(`/login?callbackUrl=${window.location.pathname}`);
+          return;
+        }
+        throw new Error("Failed to post review");
+      }
+
+      setBody("");
+      setRating(5);
+      router.refresh();
+    } catch (error) {
+      console.error(error);
+      alert("Failed to submit review. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <section aria-label="Reviews">
+      {artistId && (
+        <form onSubmit={handleSubmit} className="mb-8 premium-card p-5 space-y-4">
+          <h3 className="font-semibold text-primary">Write a Review</h3>
+          <div>
+            <label className="block text-sm font-medium mb-2">Rating</label>
+            <div className="flex gap-2">
+              {[1, 2, 3, 4, 5].map((star) => (
+                <button
+                  key={star}
+                  type="button"
+                  onClick={() => setRating(star)}
+                  className="focus:outline-none"
+                >
+                  <Star className={`size-6 ${rating >= star ? "fill-accent text-accent" : "text-muted-foreground"}`} />
+                </button>
+              ))}
+            </div>
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-2">Review</label>
+            <textarea
+              required
+              value={body}
+              onChange={(e) => setBody(e.target.value)}
+              className="w-full bg-background border border-border rounded-xl p-3 text-sm focus:ring-2 focus:ring-primary/20 outline-none"
+              rows={3}
+              placeholder="Share your experience with this artist..."
+            />
+          </div>
+          <Button type="submit" disabled={isSubmitting || !body.trim()}>
+            {isSubmitting ? "Submitting..." : "Submit Review"}
+          </Button>
+        </form>
+      )}
       {/* Summary header */}
       <div className="bg-muted mb-6 flex flex-col gap-6 rounded-2xl p-5 sm:flex-row sm:items-center sm:gap-10">
         {/* Big score */}

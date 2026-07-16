@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import type { Route } from "next";
 import { MessageSquare, Calendar, Trash2, ArrowRight } from "lucide-react";
 import { MOCK_AI_HISTORY, type MockAiHistory } from "@/lib/mock-data";
 import { FadeUp, StaggerContainer } from "@/lib/motion";

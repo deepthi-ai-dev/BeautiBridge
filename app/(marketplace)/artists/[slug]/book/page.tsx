@@ -1,10 +1,11 @@
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
-import { getArtistBySlug } from "@/features/artists/queries";
+import { getRealArtistBySlug } from "@/features/artists/real-queries";
 import { getProfileBySlug } from "@/features/artists/profile-mock-data";
 import { BookingWizard } from "@/components/booking/booking-wizard";
 import { SiteHeader } from "@/components/layout/site-header";
 import { SiteFooter } from "@/components/layout/site-footer";
+import { db } from "@/server/db";
 
 export default async function BookingPage({
   params,
@@ -20,13 +21,32 @@ export default async function BookingPage({
     redirect(`/login?callbackUrl=/artists/${slug}/book`);
   }
 
-  const artist = getArtistBySlug(slug);
+  const artist = await getRealArtistBySlug(slug);
   if (!artist) {
     redirect("/artists");
   }
 
-  const profile = getProfileBySlug(slug);
+  const mockProfile = getProfileBySlug(slug);
   const { service } = await searchParams;
+
+  const dbServices = await db.servicePackage.findMany({
+    where: { artistId: artist.id },
+  });
+
+  const servicePackages = dbServices.map(pkg => ({
+    id: pkg.id,
+    name: pkg.name,
+    description: pkg.description || "",
+    duration: pkg.duration,
+    price: pkg.price,
+    isPopular: pkg.isPopular,
+    includes: pkg.includes ? pkg.includes.split(",") : [],
+  }));
+
+  const profile = {
+    ...mockProfile,
+    servicePackages: servicePackages.length > 0 ? servicePackages : mockProfile.servicePackages,
+  };
 
   return (
     <>

@@ -6,6 +6,7 @@ import { useMarketplaceStore } from "@/stores/marketplace-store";
 import type { ArtistFilters } from "@/features/artists/types";
 
 const SORT_OPTIONS: { label: string; value: ArtistFilters["sortBy"] }[] = [
+  { label: "Nearest", value: "distance" },
   { label: "Top Rated", value: "rating" },
   { label: "Most Reviewed", value: "reviews" },
   { label: "Price: Low to High", value: "price_asc" },

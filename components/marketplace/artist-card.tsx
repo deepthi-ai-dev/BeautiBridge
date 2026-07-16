@@ -30,6 +30,7 @@ const availabilityConfig = {
 
 export function ArtistCard({ artist, onPreview }: ArtistCardProps) {
   const avail = availabilityConfig[artist.availability as keyof typeof availabilityConfig] ?? availabilityConfig.unavailable;
+  const isMapListing = artist.source === "maps";
 
   return (
     <motion.article
@@ -73,8 +74,10 @@ export function ArtistCard({ artist, onPreview }: ArtistCardProps) {
         {/* Price overlay at bottom */}
         <div className="absolute bottom-3 right-3 rounded-xl bg-white/90 px-3 py-1.5 backdrop-blur-md shadow-sm border border-white/20">
           <p className="text-sm font-bold text-plum-900">
-            {rupeeFormatter.format(artist.startingPrice)}
-            <span className="text-[10px] font-medium text-plum-600/80 uppercase tracking-wider ml-1">/ session</span>
+            {isMapListing ? "Maps listing" : rupeeFormatter.format(artist.startingPrice)}
+            {!isMapListing && (
+              <span className="text-[10px] font-medium text-plum-600/80 uppercase tracking-wider ml-1">/ session</span>
+            )}
           </p>
         </div>
         </div>
@@ -97,6 +100,7 @@ export function ArtistCard({ artist, onPreview }: ArtistCardProps) {
             <p className="text-plum-700/70 mt-1 flex items-center gap-1 text-sm truncate font-medium">
               <MapPin className="size-3.5 shrink-0" />
               {artist.city}, {artist.state}
+              {artist.distanceKm !== undefined && ` · ${artist.distanceKm} km`}
             </p>
           </div>
         </div>
@@ -132,7 +136,7 @@ export function ArtistCard({ artist, onPreview }: ArtistCardProps) {
           size="md"
           variant="outline"
         >
-          View Profile
+          {isMapListing ? "View Details" : "View Profile"}
         </Button>
       </div>
     </motion.article>

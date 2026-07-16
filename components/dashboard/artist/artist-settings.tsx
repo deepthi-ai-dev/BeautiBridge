@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Bell, ShieldCheck, Trash2, Key, Star } from "lucide-react";
+import { Bell, ShieldCheck, Trash2, Key } from "lucide-react";
 import { FadeUp, StaggerContainer } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 

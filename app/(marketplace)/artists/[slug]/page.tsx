@@ -9,21 +9,19 @@ import { ServiceMenu } from "@/components/artist-profile/service-menu";
 import { ReviewList } from "@/components/artist-profile/review-list";
 import { AvailabilityCalendar } from "@/components/artist-profile/availability-calendar";
 import { BookingPanel } from "@/components/artist-profile/booking-panel";
-import { getArtistBySlug } from "@/features/artists/queries";
+import { getRealArtistBySlug } from "@/features/artists/real-queries";
 import { getProfileBySlug } from "@/features/artists/profile-mock-data";
-import { MOCK_ARTISTS } from "@/features/artists/mock-data";
+import { db } from "@/server/db";
 
 type Props = {
   params: Promise<{ slug: string }>;
 };
 
-export async function generateStaticParams() {
-  return MOCK_ARTISTS.map((a) => ({ slug: a.slug }));
-}
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const artist = getArtistBySlug(slug);
+  const artist = await getRealArtistBySlug(slug);
   if (!artist) return { title: "Artist not found – BeautiBridge" };
   return {
     title: `${artist.name} – ${artist.services[0]} | BeautiBridge`,
@@ -48,10 +46,52 @@ function SectionHeader({ children }: Readonly<{ children: React.ReactNode }>) {
 
 export default async function ArtistProfilePage({ params }: Props) {
   const { slug } = await params;
-  const artist = getArtistBySlug(slug);
+  const artist = await getRealArtistBySlug(slug);
   if (!artist) notFound();
 
-  const profile = getProfileBySlug(slug);
+  const mockProfile = getProfileBySlug(slug);
+
+  // Fetch real data
+  const dbServices = await db.servicePackage.findMany({
+    where: { artistId: artist.id },
+  });
+  
+  const dbReviews = await db.review.findMany({
+    where: { artistId: artist.id },
+    include: { author: true },
+    orderBy: { createdAt: "desc" },
+  });
+
+  // Transform to match UI types
+  const servicePackages = dbServices.map(pkg => ({
+    id: pkg.id,
+    name: pkg.name,
+    description: pkg.description || "",
+    duration: pkg.duration,
+    price: pkg.price,
+    isPopular: pkg.isPopular,
+    includes: pkg.includes ? pkg.includes.split(",") : [],
+  }));
+
+  const reviews = dbReviews.map(r => ({
+    id: r.id,
+    author: {
+      name: r.author.name || "Anonymous",
+      avatar: r.author.image || "/images/marketing/hero-makeup.svg",
+      location: r.author.city || "Unknown",
+    },
+    rating: r.rating,
+    date: r.createdAt.toISOString(),
+    service: r.service || "General",
+    body: r.body,
+    helpful: r.helpful,
+  }));
+  
+  const profile = {
+    ...mockProfile,
+    servicePackages: servicePackages.length > 0 ? servicePackages : mockProfile.servicePackages,
+    reviews: reviews.length > 0 ? reviews : mockProfile.reviews,
+  };
 
   return (
     <>
@@ -127,6 +167,7 @@ export default async function ArtistProfilePage({ params }: Props) {
                     </span>
                   </SectionHeader>
                   <ReviewList
+                    artistId={artist.id}
                     averageRating={artist.rating}
                     reviews={profile.reviews}
                     totalCount={artist.reviewCount}

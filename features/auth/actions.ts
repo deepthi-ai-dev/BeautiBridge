@@ -206,7 +206,7 @@ export async function completeUserProfileAction(input: unknown) {
     });
 
     return { status: "success", message: "Profile updated successfully" };
-  } catch (error) {
+  } catch (_error) {
     return { status: "error", message: "Failed to update profile" };
   }
 }

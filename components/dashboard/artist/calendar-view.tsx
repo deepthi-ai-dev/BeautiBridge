@@ -17,7 +17,7 @@ const weekDays = [
 ];
 
 export function CalendarView() {
-  const [slots, setSlots] = useState<MockCalendarSlot[]>(MOCK_CALENDAR_SLOTS);
+  const [slots, _setSlots] = useState<MockCalendarSlot[]>(MOCK_CALENDAR_SLOTS);
   const [selectedDay, setSelectedDay] = useState("07");
 
   function handleSlotClick(slot: MockCalendarSlot) {

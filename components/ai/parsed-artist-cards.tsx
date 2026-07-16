@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowRight, MapPin, ShieldCheck, Sparkles, Star } from "lucide-react";
+import { ArrowRight, MapPin, Sparkles, Star } from "lucide-react";
 import Link from "next/link";
 import { rupeeFormatter } from "@/lib/formatters";
 import type { ParsedArtist } from "@/lib/ai-parser";
